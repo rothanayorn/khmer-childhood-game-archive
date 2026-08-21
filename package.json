@@ -1,0 +1,29 @@
+{
+  "name": "khmer-childhood-game-archive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rothanayorn/khmer-childhood-game-archive.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/rothanayorn/khmer-childhood-game-archive/issues"
+  },
+  "homepage": "https://github.com/rothanayorn/khmer-childhood-game-archive#readme",
+  "dependencies": {
+    "next": "^16.3.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  }
+}
