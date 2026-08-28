@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Noto+Serif+Khmer:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap");
+
+:root {
+  /* Palette — drawn from Cambodian material culture, not stock defaults:
+     rice-paper cream, indigo silk, saffron robe, laterite (Angkor brick), rice-field jade */
+  --color-bg: #f6efdc;
+  --color-bg-raised: #fffaf0;
+  --color-ink: #251d14;
+  --color-ink-soft: #4a3f30;
+  --color-indigo: #1f3b4d;
+  --color-indigo-deep: #142832;
+  --color-marigold: #e4a335;
+  --color-laterite: #a8462b;
+  --color-jade: #4c6b4f;
+  --color-line: #ddceac;
+
+  --font-display: "Fraunces", "Noto Serif Khmer", serif;
+  --font-khmer: "Noto Serif Khmer", serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+
+  --radius: 4px;
+  --max-width: 1120px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Signature motif: a krama (checkered scarf) stripe, used sparingly as a
+   divider — the one recurring textile reference on the site. */
+.kramaStripe {
+  height: 10px;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-indigo) 0,
+    var(--color-indigo) 10px,
+    var(--color-marigold) 10px,
+    var(--color-marigold) 20px,
+    var(--color-laterite) 20px,
+    var(--color-laterite) 30px,
+    var(--color-bg-raised) 30px,
+    var(--color-bg-raised) 40px
+  );
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-laterite);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

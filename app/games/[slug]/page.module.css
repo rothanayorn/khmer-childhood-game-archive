@@ -1,0 +1,148 @@
+.hero {
+  background: var(--color-indigo);
+  color: var(--color-bg-raised);
+}
+
+.heroInner {
+  padding: 28px 24px 48px;
+}
+
+.back {
+  display: inline-block;
+  color: var(--color-marigold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+.heroImage {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--color-indigo-deep);
+}
+
+.nameKhmer {
+  font-family: var(--font-khmer);
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.nameEnglish {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-marigold);
+  margin: 4px 0 14px;
+}
+
+.tagline {
+  max-width: 46ch;
+  color: rgba(255, 250, 240, 0.85);
+  margin: 0 0 24px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 250, 240, 0.2);
+}
+
+.meta dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-marigold);
+  opacity: 0.9;
+}
+
+.meta dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.main {
+  padding: 56px 24px 72px;
+  max-width: 760px;
+}
+
+.stepsHeading {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  margin: 0 0 28px;
+  color: var(--color-indigo);
+}
+
+.steps {
+  list-style: none;
+  margin: 0 0 40px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.stepNumber {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-laterite);
+}
+
+.step p {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.cta {
+  display: inline-block;
+  color: var(--color-indigo);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.cta:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 620px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroImage {
+    max-width: 200px;
+  }
+}

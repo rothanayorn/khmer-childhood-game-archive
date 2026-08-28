@@ -1,84 +1,40 @@
-import collection from "../collection.config.js";
+import SiteHeader from "@/components/SiteHeader";
+import GameCard from "@/components/GameCard";
+import games from "@/data/games";
+import styles from "./page.module.css";
 
-const styles = {
-  wrap: {
-    maxWidth: 720,
-    margin: "0 auto",
-    padding: "80px 24px",
-  },
-  kicker: {
-    fontFamily: "'Courier New', monospace",
-    color: "#2EE6A8",
-    fontSize: 14,
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 700,
-    margin: "16px 0 12px",
-    lineHeight: 1.1,
-  },
-  description: {
-    fontSize: 18,
-    color: "#97A1B3",
-    lineHeight: 1.6,
-    margin: 0,
-  },
-  card: {
-    marginTop: 48,
-    padding: 24,
-    backgroundColor: "#1C222C",
-    border: "1px solid #2E3644",
-    borderRadius: 10,
-  },
-  cardLabel: {
-    fontFamily: "'Courier New', monospace",
-    fontSize: 12,
-    color: "#97A1B3",
-    margin: 0,
-  },
-  cardValue: {
-    fontSize: 16,
-    margin: "6px 0 0",
-  },
-  count: {
-    fontFamily: "'Courier New', monospace",
-    fontSize: 14,
-    color: "#2EE6A8",
-    marginTop: 48,
-  },
-  footer: {
-    marginTop: 64,
-    paddingTop: 24,
-    borderTop: "1px solid #2E3644",
-    fontSize: 13,
-    color: "#5A6373",
-  },
-};
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main style={styles.wrap}>
-      <p style={styles.kicker}>KHMER LIVING ARCHIVE</p>
-      <h1 style={styles.title}>{collection.name}</h1>
-      <p style={styles.description}>{collection.description}</p>
+    <>
+      <SiteHeader />
 
-      <div style={styles.card}>
-        <p style={styles.cardLabel}>CURATED BY</p>
-        <p style={styles.cardValue}>{collection.curator}</p>
-      </div>
-      <div style={styles.card}>
-        <p style={styles.cardLabel}>SOURCE</p>
-        <p style={styles.cardValue}>{collection.source}</p>
-      </div>
+      <section className={styles.hero}>
+        <div className={`container ${styles.heroInner}`}>
+          <p className={styles.eyebrow}>An archive, kept by the people who played</p>
+          <h1 className={styles.heroTitle}>
+            Khmer childhood games that children played before smartphones
+          </h1>
+        </div>
+      </section>
 
-      <p style={styles.count}>entries in the archive: 0 (for now)</p>
+      <div className="kramaStripe" />
 
-      <footer style={styles.footer}>
-        Built in ICT 340 — Vibe Coding, American University of Phnom Penh, Fall
-        2026. This archive is under construction all semester. Come back in
-        December.
+      <main className={`container ${styles.main}`}>
+        <div className={styles.grid}>
+          {games.map((game) => (
+            <GameCard key={game.slug} game={game} />
+          ))}
+        </div>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className="container">
+          <p>
+            Collected from grandparents, cousins, and neighbours across Cambodia.
+            Know a game that belongs here? Send it in.
+          </p>
+        </div>
       </footer>
-    </main>
+    </>
   );
 }

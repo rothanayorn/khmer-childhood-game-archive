@@ -1,25 +1,15 @@
-import collection from "../collection.config.js";
+import "./globals.css";
 
 export const metadata = {
-  title: `${collection.name} — Khmer Living Archive`,
-  description: collection.description,
+  title: "Khmer Childhood Games",
+  description:
+    "An archive of Khmer childhood games, collected from the people who grew up playing them.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        style={{
-          margin: 0,
-          backgroundColor: "#14181F",
-          color: "#E8EDF2",
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          minHeight: "100vh",
-        }}
-      >
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
