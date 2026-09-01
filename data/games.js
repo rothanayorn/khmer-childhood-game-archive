@@ -88,7 +88,7 @@ const games = [
   },
   {
     slug: "chab-kon-kaeb",
-    nameKhmer: "ចាប់កូនកែម",
+    nameKhmer: "ចាប់កូនក្លែង",
     nameEnglish: "Chab Kon Kaeb",
     tagline: "A winding chain game where a 'mother hen' shields her chicks from a hawk.",
     description:

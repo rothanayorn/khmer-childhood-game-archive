@@ -25,10 +25,6 @@ export default function GameCard({ game }) {
           </div>
         </dl>
 
-        <Link href={`/games/${game.slug}`} className={styles.cta}>
-          How to play
-          <span aria-hidden="true">→</span>
-        </Link>
       </div>
     </article>
   );

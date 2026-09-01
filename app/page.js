@@ -1,5 +1,5 @@
 import SiteHeader from "@/components/SiteHeader";
-import GameCard from "@/components/GameCard";
+import GameSearch from "@/components/GameSearch";
 import games from "@/data/games";
 import styles from "./page.module.css";
 
@@ -20,11 +20,7 @@ export default function HomePage() {
       <div className="kramaStripe" />
 
       <main className={`container ${styles.main}`}>
-        <div className={styles.grid}>
-          {games.map((game) => (
-            <GameCard key={game.slug} game={game} />
-          ))}
-        </div>
+        <GameSearch games={games} />
       </main>
 
       <footer className={styles.footer}>
