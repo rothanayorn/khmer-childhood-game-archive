@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import GameCard from "./GameCard";
-import { filterGames } from "@/lib/search";
+import { filterGames, pickRecommendations } from "@/lib/search";
 import styles from "./GameSearch.module.css";
 
 export default function GameSearch({ games }) {
@@ -12,6 +12,9 @@ export default function GameSearch({ games }) {
   // Dataset is tiny, so filtering live on every keystroke is cheap.
   const results = filterGames(games, query);
   const hasQuery = query.trim().length > 0;
+  // Suggestions to offer when a search comes back empty.
+  const recommendations =
+    hasQuery && results.length === 0 ? pickRecommendations(games, query) : [];
 
   return (
     <>
@@ -68,6 +71,28 @@ export default function GameSearch({ games }) {
             No games match &ldquo;{query}&rdquo;. Try a Khmer or English name, a
             contributor, or a place.
           </p>
+
+          <div className={styles.recommend}>
+            <p className={styles.recommendLabel}>
+              <span className={styles.recommendKhmer}>សាកល្បែងទាំងនេះជំនួស</span>
+              <span className={styles.recommendEnglish}>
+                Try one of these instead:
+              </span>
+            </p>
+            <div className={styles.chips}>
+              {recommendations.map((game) => (
+                <button
+                  key={game.slug}
+                  type="button"
+                  className={styles.chip}
+                  onClick={() => setQuery(game.nameEnglish)}
+                >
+                  <span className={styles.chipKhmer}>{game.nameKhmer}</span>
+                  <span className={styles.chipEnglish}>{game.nameEnglish}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </>
