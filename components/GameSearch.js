@@ -24,7 +24,9 @@ export default function GameSearch({ games }) {
         onSubmit={(event) => event.preventDefault()}
       >
         <label htmlFor={inputId} className={styles.label}>
-          <span className={styles.labelKhmer}>ស្វែងរកល្បែង</span>
+          <span className={styles.labelKhmer} lang="km">
+            ស្វែងរកល្បែង
+          </span>
           <span className={styles.labelEnglish}>Search the archive</span>
         </label>
 
@@ -51,8 +53,8 @@ export default function GameSearch({ games }) {
         </div>
 
         <p className={styles.count} aria-live="polite">
-          ល្បែង {results.length} · {results.length === 1 ? "game" : "games"}{" "}
-          found
+          <span lang="km">ល្បែង</span> {results.length} ·{" "}
+          {results.length === 1 ? "game" : "games"} found
         </p>
       </form>
 
@@ -64,7 +66,7 @@ export default function GameSearch({ games }) {
         </div>
       ) : (
         <div className={styles.empty}>
-          <p className={styles.emptyKhmer}>
+          <p className={styles.emptyKhmer} lang="km">
             រកមិនឃើញ «{query}» ទេ។ សាកឈ្មោះជាភាសាខ្មែរ ឬអង់គ្លេស, អ្នកចូលរួម​ ឬ​ ទីកន្លែង​ ។
           </p>
           <p className={styles.emptyEnglish}>
@@ -74,7 +76,9 @@ export default function GameSearch({ games }) {
 
           <div className={styles.recommend}>
             <p className={styles.recommendLabel}>
-              <span className={styles.recommendKhmer}>សាកល្បែងទាំងនេះជំនួស</span>
+              <span className={styles.recommendKhmer} lang="km">
+                សាកល្បែងទាំងនេះជំនួស
+              </span>
               <span className={styles.recommendEnglish}>
                 Try one of these instead:
               </span>
@@ -87,7 +91,9 @@ export default function GameSearch({ games }) {
                   className={styles.chip}
                   onClick={() => setQuery(game.nameEnglish)}
                 >
-                  <span className={styles.chipKhmer}>{game.nameKhmer}</span>
+                  <span className={styles.chipKhmer} lang="km">
+                    {game.nameKhmer}
+                  </span>
                   <span className={styles.chipEnglish}>{game.nameEnglish}</span>
                 </button>
               ))}

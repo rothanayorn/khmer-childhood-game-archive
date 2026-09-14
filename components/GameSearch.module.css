@@ -40,6 +40,12 @@
   padding: 12px 44px 12px 16px;
 }
 
+/* Hide the browser's native search clear button
+   so it doesn't overlap with our custom .clear button. */
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
 .input::placeholder {
   color: var(--color-ink-soft);
   opacity: 0.6;

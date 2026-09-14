@@ -9,7 +9,9 @@ export default function GameCard({ game }) {
       </div>
 
       <div className={styles.body}>
-        <h3 className={styles.nameKhmer}>{game.nameKhmer}</h3>
+        <h3 className={styles.nameKhmer} lang="km">
+          {game.nameKhmer}
+        </h3>
         <p className={styles.nameEnglish}>{game.nameEnglish}</p>
 
         <p className={styles.description}>{game.description}</p>

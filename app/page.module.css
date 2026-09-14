@@ -45,3 +45,29 @@
   color: var(--color-ink-soft);
   max-width: 560px;
 }
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-indigo);
+  color: var(--color-bg-raised);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  margin-top: 18px;
+  transition: background 150ms ease, gap 150ms ease;
+}
+
+.submitBtn:hover {
+  background: var(--color-laterite);
+  gap: 12px;
+}
+
+.submitBtn:focus-visible {
+  outline: 3px solid var(--color-laterite);
+  outline-offset: 2px;
+}

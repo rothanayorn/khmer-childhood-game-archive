@@ -4,7 +4,7 @@ import games from "@/data/games";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Browse all games — Khmer Childhood Games",
+  title: "Khmer Childhood Games",
   description:
     "Search and browse every Khmer childhood game in the archive, in Khmer or English.",
 };

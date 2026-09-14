@@ -35,7 +35,9 @@ export default function GamePage({ params }) {
             <img src={game.image} alt="" aria-hidden="true" className={styles.heroImage} />
 
             <div>
-              <h1 className={styles.nameKhmer}>{game.nameKhmer}</h1>
+              <h1 className={styles.nameKhmer} lang="km">
+                {game.nameKhmer}
+              </h1>
               <p className={styles.nameEnglish}>{game.nameEnglish}</p>
               <p className={styles.tagline}>{game.tagline}</p>
 
