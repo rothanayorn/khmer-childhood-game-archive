@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthArea from "./AuthArea";
 import styles from "./SiteHeader.module.css";
 
 export default function SiteHeader() {
@@ -16,6 +17,7 @@ export default function SiteHeader() {
           <Link href="/browse" className={styles.navLink}>
             Browse
           </Link>
+          <AuthArea />
         </nav>
       </div>
       <div className="kramaStripe" />

@@ -29,16 +29,7 @@ export default function HomePage() {
             Collected from grandparents, cousins, and neighbours across Cambodia.
             Know a game that belongs here? Send it in.
           </p>
-           <a 
-            href="https://docs.google.com/forms/d/e/1FAIpQLScsvx-OcnOtDEA5Z6V9H1yVg1l3-YV5P5Vgh5CWiaP35Y6K8w/viewform?usp=publish-editor"
-            className={styles.submitBtn}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Send
-            <span aria-hidden="true">→</span>
-          </a>
-              </div>
+          </div>
       </footer>
     </>
   );
