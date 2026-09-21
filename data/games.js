@@ -107,6 +107,71 @@ const games = [
       "Play continues until only a few chicks remain, or everyone collapses laughing.",
     ],
   },
+  {
+    slug: "muek jumping game",
+    nameKhmer: "ល្បែងលោតមឹក",
+    nameEnglish: "Muek Jumping Game",
+    tagline: "A traditional jumping game where children hop through a squid-shaped drawing on the ground.",
+    description:
+      "Players take turns jumping through the different sections of a squid-shaped figure drawn on the ground. The game is usually played outdoors in an open space, such as a yard or village area, and is enjoyed as a fun group activity among children.",
+    players: "2–4 players",
+    materials: "Chalk, stick, or anything that can be used to draw on the ground",
+    contributor: "Nita",
+    place: "Prey Veng",
+    image: "/images/muek-jumping-game.jpg",
+    steps: [
+      "Find an open, flat area where everyone can play safely.",
+      "Draw a squid-shaped figure on the ground, dividing it into different sections for players to jump through.",
+      "Players take turns standing at the starting point of the drawing.",
+      "Jump through the different sections of the squid shape while following the agreed rules.",
+      "Players continue taking turns and try to complete the course without stepping outside the drawn lines.",
+      "The game continues as players take turns jumping, with everyone enjoying the activity together."
+    ],
+  },
+  {
+    slug: "rubber-band-jumping-game",
+    nameKhmer: "លេងលូតកៅស៊ូ",
+    nameEnglish: "Rubber Band Jumping Game",
+    tagline: "A traditional jumping game where children jump over a stretched rubber band at different heights.",
+    description:
+      "Players take turns jumping over a long rubber band held between two players. The rubber band starts at a low height and is gradually raised as the game continues. Players must jump over it without touching or stepping on the rubber band, making the game a fun test of balance, flexibility, and jumping ability.",
+    players: "3-10 players",
+    materials: "A long rubber band or several rubber bands tied together",
+    contributor: "Chea Visal",
+    place: "Prey Veng",
+    image: "/images/lot-kausu.jpg",
+    steps: [
+      "Find an open, flat area where everyone can play safely.",
+      "Choose two players to stand facing each other and hold the rubber band between them.",
+      "Start by holding the rubber band at a low height, usually around the ankles.",
+      "The other players take turns jumping over the rubber band without touching it.",
+      "After everyone has had a turn, raise the rubber band to a higher level and continue jumping.",
+      "Players who touch or step on the rubber band may be out or repeat the turn, depending on the local rules.",
+      "Continue raising the rubber band until only one or a few players can successfully jump over it."
+    ],
+  },
+  {
+   slug: "stech-chong",
+    nameKhmer: "ស្តេចចង់",
+    nameEnglish: "Stech Chong",
+    tagline: "A guessing game where two teams secretly name players and try to guess each other's choices.",
+    description:
+      "Players divide into two equal teams and face each other with a 'king' sitting between them. One team secretly whispers the name of a player from the opposite team to the king. Members of the other team then take turns approaching the king and trying to guess the chosen player. If they guess correctly, the king calls out 'Stech Chong!' and the chosen player is captured. If they guess incorrectly, that player secretly names someone from the opposite team, allowing the guessing to continue back and forth.",
+    players: "8–20 players plus one king",
+    materials: "None — just an open space for two groups to sit or stand",
+    contributor: "Sok Karuna",
+    place: "Prey Veng",
+    image: "/images/stech-chong.jpg",
+    steps: [ "Divide the players into two equal teams, traditionally a boys' team and a girls' team.", 
+      "Have the two teams sit or stand facing each other, with enough space between them.", 
+      "Choose one person to be the 'king' and have them sit in the middle between the two teams.", 
+      "One player from the starting team approaches the king, covers the king's ear, and secretly whispers the name of a player from the opposite team.", 
+      "Players from the opposite team then take turns approaching the king to try to guess the name that was whispered.", 
+      "If a player correctly guesses the chosen name, the king calls out 'Stech Chong!' and the named player is captured by the opposing team.", 
+      "If the guess is incorrect, the player gets a chance to whisper the name of a player from the opposite team to the king.", 
+      "The teams continue guessing and naming players back and forth until one team has lost all or most of its players.", 
+      "The losing team may receive a fun agreed-upon penalty, such as singing, dancing, imitating an animal, or carrying a member of the winning team." ],
+  },
 ];
 
 export default games;
