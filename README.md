@@ -66,51 +66,6 @@ The same two variables must be set in Vercel project settings for production.
 | `npm start`        | Serve the production build        |
 | `npm run lint`     | Run ESLint                        |
 
-## Project structure
-
-```
-app/
-  page.js               Home page (hero, search, submit button)
-  browse/page.js        Browse & search every entry
-  games/[slug]/page.js  Per-game "how to play" page (static)
-  login/page.js         Sign-in page (centred form)
-  signup/page.js        Create-account page (centred form)
-components/
-  SiteHeader.js         Header + auth area (email / log out, or log in / sign up)
-  AuthArea.js           Header auth widget (client component)
-  GameSearch.js         Bilingual search + recommendations (client component)
-  GameCard.js           One card in the browse grid
-  LoginForm.js          Sign-in form (Supabase)
-  SignupForm.js         Create-account form (Supabase)
-data/
-  games.js              All archive entries (the current "database")
-lib/
-  search.js             Bilingual search + recommendation logic
-  supabase/
-    server.js           Server Supabase client (@supabase/ssr cookie pattern)
-    client.js           Browser Supabase client
-public/images/          Game photos
-```
-
-## Adding an entry
-
-Entries currently live in `data/games.js` — each one looks like this:
-
-```js
-{
-  slug: "chol-chhoung",                        // URL slug, e.g. /games/chol-chhoung
-  nameKhmer: "ចោលឈូង",                        // Khmer name (first-class content)
-  nameEnglish: "Chol Chhoung",
-  tagline: "A rolled-cloth throwing game…",
-  description: "…",
-  players: "8–20 players, in two teams",
-  materials: "A krama (scarf) rolled and knotted into a ball",
-  contributor: "Sophea Ly",
-  place: "Prey Veng",
-  image: "/images/chol-chhoung.jpg",           // add the photo to public/images
-  steps: ["…", "…"],                           // how to play, in order
-}
-```
 
 Add the object to the `games` array, drop a photo into `public/images/`, and the
 new entry appears in search, browse, and its own game page automatically.
