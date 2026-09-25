@@ -1,0 +1,266 @@
+-- 003 · seed all archive entries from data/games.js (upsert by slug, safe to re-run)
+--
+-- IMPORTANT: create at least one account (sign up on the site) BEFORE running
+-- this, so a real auth.users row exists — the seed assigns every entry to the
+-- oldest user for `owner`. Replace the subquery with your own UUID if you prefer:
+--   (select id from auth.users where email = 'you@example.com')
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'chol-chhoung', 'Chol Chhoung', 'ចោលឈូង',
+    'A rolled-cloth throwing game played in a circle at Khmer New Year.',
+    'Players split into two lines facing each other and take turns throwing a tightly rolled cloth ball, the chhoung, across the circle while singing call-and-response verses. Whoever is tagged has to dance for the group before the game continues.',
+    '8–20 players, in two teams',
+    'A krama (scarf) rolled and knotted into a ball',
+    'Sophea Ly', 'Prey Veng', '/images/chol-chhoung.jpg',
+    array[
+      'Split everyone into two even lines standing a few metres apart, facing each other.',
+      'One team rolls the krama tightly and knots it into a ball — this is the chhoung.',
+      'A player from one line sings a short verse, then throws the chhoung toward the other line.',
+      'Players on the receiving line try to catch it or dodge it; whoever it lands on (or fails to catch it) is ''tagged''.',
+      'The tagged player is called to the middle to dance while the group sings and claps along.',
+      'Play continues, alternating throws, until everyone is tired or the sun goes down.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'leak-kanseng', 'Leak Kanseng', 'លាក់កន្សែង',
+    'A hide-the-scarf chasing game, close cousin of duck-duck-goose.',
+    'Children sit in a circle with their eyes closed and hands open behind their backs while one player quietly circles the outside with a rolled scarf, trying to drop it behind someone without being noticed before it''s too late.',
+    '6–15 players, one at a time is ''it''',
+    'A rolled krama or any small scarf',
+    'Vantha Chan', 'Prey Veng', '/images/leak-kanseng.png',
+    array[
+      'Everyone sits cross-legged in a circle, facing inward with eyes closed and hands open behind their backs.',
+      'One player, holding the rolled scarf, walks quietly around the outside of the circle.',
+      'They drop the scarf behind any player without being seen, then keep walking as if empty-handed.',
+      'Players occasionally feel behind themselves to check if the scarf has landed there.',
+      'If a player finds the scarf behind them, they jump up and chase the dropper around the circle.',
+      'If caught before reaching the empty spot, the dropper repeats their turn; if not, the caught player becomes the new dropper.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'bos-angkunh', 'Bos Angkunh', 'បោះអង្គញ់',
+    'A precision throwing game played with the hard seeds of the angkunh tree.',
+    'Two teams take turns setting up rows of angkunh seeds on the ground and trying to knock them down using a single seed held between the toes and flicked by hand — part marksmanship, part balance.',
+    '4–12 players, in two teams',
+    'A handful of dried angkunh seeds',
+    'Bunthoeun Prak', 'Prey Veng', '/images/bos-angkunh.webp',
+    array[
+      'One team lines up several angkunh seeds standing upright in a row on flat ground — this is the target row.',
+      'The other team stands back at an agreed distance, each with a throwing seed.',
+      'A thrower balances their seed between two toes, then flicks it forward by hand to knock over target seeds.',
+      'Knocked-over seeds are collected as points for the throwing team.',
+      'Once every thrower has had a turn, the teams switch roles.',
+      'The game continues for an agreed number of rounds; the team with the most collected seeds wins.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'teanh-prot', 'Teanh Prot', 'ទាញព្រ័ត្រ',
+    'Tug-of-war, played at festivals with rope, cloth, or bare hands.',
+    'Two teams of roughly equal size grip opposite ends of a long rope and pull, trying to drag the other side across a line drawn in the dirt. Loud, chant-heavy, and a fixture of Khmer New Year fairgrounds.',
+    '6 or more per side',
+    'A long, sturdy rope (or knotted cloth for younger kids)',
+    'Chenda Meas', 'Prey Veng', '/images/teanh-prot.jpg',
+    array[
+      'Draw a line in the dirt or lay down a marker to represent the centre point.',
+      'Split players into two teams of roughly equal strength and line them up on either side of the line.',
+      'Both teams grip the rope, with the centre of the rope over the line.',
+      'On a signal, both teams lean back and pull as hard as they can.',
+      'The first team to drag the other team''s front player across the centre line wins the round.',
+      'Best of three rounds is the usual way to settle it.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'chab-kon-kaeb', 'Chab Kon Kaeb', 'ចាប់កូនខ្លែង',
+    'A winding chain game where a ''mother hen'' shields her chicks from a hawk.',
+    'Players form a chain behind a lead ''mother'' player, hands on the shoulders or waist of the person in front, while a ''hawk'' tries to tag the last person in line. The whole line snakes and turns to protect its tail.',
+    '8–20 players plus one hawk',
+    'None — just open space to run',
+    'Rithy Sok', 'Prey Veng', '/images/chab-kon-kaeb.jpg',
+    array[
+      'Choose one player to be the hawk and one to be the mother; everyone else lines up behind the mother, holding the waist of the person in front.',
+      'The hawk stands facing the mother, who spreads her arms to block the hawk''s path.',
+      'On a signal, the hawk tries to dart around the mother to tag the last player in the chain.',
+      'The chain swings and turns together, following the mother''s lead to keep the last player out of reach.',
+      'If the hawk tags the last player, that player is out (or becomes the new hawk, depending on local rules).',
+      'Play continues until only a few chicks remain, or everyone collapses laughing.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'muek-jumping-game', 'Muek Jumping Game', 'ល្បែងលោតមឹក',
+    'A traditional jumping game where children hop through a squid-shaped drawing on the ground.',
+    'Players take turns jumping through the different sections of a squid-shaped figure drawn on the ground. The game is usually played outdoors in an open space, such as a yard or village area, and is enjoyed as a fun group activity among children.',
+    '2–4 players',
+    'Chalk, stick, or anything that can be used to draw on the ground',
+    'Nita', 'Prey Veng', '/images/muek-jumping-game.jpg',
+    array[
+      'Find an open, flat area where everyone can play safely.',
+      'Draw a squid-shaped figure on the ground, dividing it into different sections for players to jump through.',
+      'Players take turns standing at the starting point of the drawing.',
+      'Jump through the different sections of the squid shape while following the agreed rules.',
+      'Players continue taking turns and try to complete the course without stepping outside the drawn lines.',
+      'The game continues as players take turns jumping, with everyone enjoying the activity together.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'rubber-band-jumping-game', 'Rubber Band Jumping Game', 'លេងលូតកៅស៊ូ',
+    'A traditional jumping game where children jump over a stretched rubber band at different heights.',
+    'Players take turns jumping over a long rubber band held between two players. The rubber band starts at a low height and is gradually raised as the game continues. Players must jump over it without touching or stepping on the rubber band, making the game a fun test of balance, flexibility, and jumping ability.',
+    '3-10 players',
+    'A long rubber band or several rubber bands tied together',
+    'Chea Visal', 'Prey Veng', '/images/lot-kausu.jpg',
+    array[
+      'Find an open, flat area where everyone can play safely.',
+      'Choose two players to stand facing each other and hold the rubber band between them.',
+      'Start by holding the rubber band at a low height, usually around the ankles.',
+      'The other players take turns jumping over the rubber band without touching it.',
+      'After everyone has had a turn, raise the rubber band to a higher level and continue jumping.',
+      'Players who touch or step on the rubber band may be out or repeat the turn, depending on the local rules.',
+      'Continue raising the rubber band until only one or a few players can successfully jump over it.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;
+
+insert into entries
+  (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
+values
+  (
+    'stech-chong', 'Stech Chong', 'ស្តេចចង់',
+    'A guessing game where two teams secretly name players and try to guess each other''s choices.',
+    'Players divide into two equal teams and face each other with a ''king'' sitting between them. One team secretly whispers the name of a player from the opposite team to the king. Members of the other team then take turns approaching the king and trying to guess the chosen player. If they guess correctly, the king calls out ''Stech Chong!'' and the chosen player is captured. If they guess incorrectly, that player secretly names someone from the opposite team, allowing the guessing to continue back and forth.',
+    '8–20 players plus one king',
+    'None — just an open space for two groups to sit or stand',
+    'Sok Karuna', 'Prey Veng', '/images/stech-chong.jpg',
+    array[
+      'Divide the players into two equal teams, traditionally a boys'' team and a girls'' team.',
+      'Have the two teams sit or stand facing each other, with enough space between them.',
+      'Choose one person to be the ''king'' and have them sit in the middle between the two teams.',
+      'One player from the starting team approaches the king, covers the king''s ear, and secretly whispers the name of a player from the opposite team.',
+      'Players from the opposite team then take turns approaching the king to try to guess the name that was whispered.',
+      'If a player correctly guesses the chosen name, the king calls out ''Stech Chong!'' and the named player is captured by the opposing team.',
+      'If the guess is incorrect, the player gets a chance to whisper the name of a player from the opposite team to the king.',
+      'The teams continue guessing and naming players back and forth until one team has lost all or most of its players.',
+      'The losing team may receive a fun agreed-upon penalty, such as singing, dancing, imitating an animal, or carrying a member of the winning team.'
+    ],
+    (select id from auth.users order by created_at limit 1)
+  )
+on conflict (slug) do update set
+  title = excluded.title,
+  name_khmer = excluded.name_khmer,
+  tagline = excluded.tagline,
+  description = excluded.description,
+  players = excluded.players,
+  materials = excluded.materials,
+  contributor_name = excluded.contributor_name,
+  place = excluded.place,
+  photo_url = excluded.photo_url,
+  steps = excluded.steps;

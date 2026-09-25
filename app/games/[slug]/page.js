@@ -1,24 +1,29 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteHeader from "@/components/SiteHeader";
-import games, { getGameBySlug } from "@/data/games";
+import { createClient } from "@/lib/supabase/server";
+import { ENTRY_COLUMNS, toGame } from "@/lib/entries";
 import styles from "./page.module.css";
 
-export function generateStaticParams() {
-  return games.map((game) => ({ slug: game.slug }));
-}
+// Dynamic route — the archive lives in Supabase, so every request reads the
+// entry straight from the `entries` table (public read via RLS) instead of a
+// list baked in at build time. Missing entries or an unreachable database 404
+// cleanly rather than crashing.
+export default async function GamePage({ params }) {
+  let row = null;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("entries")
+      .select(ENTRY_COLUMNS)
+      .eq("slug", params.slug)
+      .limit(1);
+    if (!error && data && data[0]) row = data[0];
+  } catch {
+    row = null;
+  }
 
-export function generateMetadata({ params }) {
-  const game = getGameBySlug(params.slug);
-  if (!game) return {};
-  return {
-    title: `How to play ${game.nameEnglish} — Khmer Childhood Games`,
-    description: game.tagline,
-  };
-}
-
-export default function GamePage({ params }) {
-  const game = getGameBySlug(params.slug);
+  const game = row ? toGame(row) : null;
   if (!game) notFound();
 
   return (

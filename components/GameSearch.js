@@ -1,13 +1,34 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import GameCard from "./GameCard";
 import { filterGames, pickRecommendations } from "@/lib/search";
 import styles from "./GameSearch.module.css";
 
-export default function GameSearch({ games }) {
+export default function GameSearch() {
   const inputId = useId();
+  const [games, setGames] = useState([]);
+  const [status, setStatus] = useState("loading"); // loading | ready | error
   const [query, setQuery] = useState("");
+
+  // The archive lives in Supabase now — load it once from the API, then filter
+  // locally on every keystroke exactly as before.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/entries")
+      .then((response) => response.json())
+      .then((data) => {
+        if (cancelled) return;
+        setGames(Array.isArray(data.games) ? data.games : []);
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Dataset is tiny, so filtering live on every keystroke is cheap.
   const results = filterGames(games, query);
@@ -58,7 +79,22 @@ export default function GameSearch({ games }) {
         </p>
       </form>
 
-      {results.length > 0 ? (
+      {status === "loading" ? (
+        <p className={styles.loading}>Loading the archive…</p>
+      ) : status === "error" ? (
+        <p className={styles.error}>
+          Could not load games from the archive. Check that Supabase is set up
+          (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) and
+          that the entries table exists and is seeded.
+        </p>
+      ) : status === "ready" && games.length === 0 ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyEnglish}>
+            The archive is empty right now. Check back soon — the first entries
+            will appear here.
+          </p>
+        </div>
+      ) : results.length > 0 ? (
         <div className={styles.grid}>
           {results.map((game) => (
             <GameCard key={game.slug} game={game} />

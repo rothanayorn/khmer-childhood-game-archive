@@ -1,6 +1,5 @@
 import SiteHeader from "@/components/SiteHeader";
 import GameSearch from "@/components/GameSearch";
-import games from "@/data/games";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -20,7 +19,7 @@ export default function HomePage() {
       <div className="kramaStripe" />
 
       <main className={`container ${styles.main}`}>
-        <GameSearch games={games} />
+        <GameSearch />
       </main>
 
       <footer className={styles.footer}>

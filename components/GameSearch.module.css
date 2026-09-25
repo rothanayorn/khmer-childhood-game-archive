@@ -83,6 +83,26 @@
   color: var(--color-ink-soft);
 }
 
+.loading {
+  background: var(--color-bg-raised);
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  max-width: 640px;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+.error {
+  background: var(--color-bg-raised);
+  border: 1px dashed var(--color-laterite);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  max-width: 640px;
+  font-size: 0.9rem;
+  color: var(--color-laterite);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
