@@ -7,14 +7,23 @@ with Next.js (App Router) and Supabase for the ICT 340 Living Archive project.
 
 ## What's in here
 
+<<<<<<< HEAD
 - **Browse & search** — a searchable grid of game cards, served from the
   Supabase `entries` table. Search works in Khmer
+=======
+- **Browse & search** — a searchable grid of game cards. Search works in Khmer
+>>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
   and English (`ចោលឈូង`, `tug`, a contributor name, a place) with proper
   Unicode normalisation, so typing variations still match. When a search comes up
   empty, the page suggests a few games as a fallback.
 - **Game pages** — each entry has its own page with a photo, metadata (players,
+<<<<<<< HEAD
   materials, contributor, place) and a step-by-step "How to play" guide, read
   live from the Supabase `entries` table at request time.
+=======
+  materials, contributor, place) and a step-by-step "How to play" guide. Generated
+  statically at build time.
+>>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
 - **Submit an entry** — a "Send" button on the home page opens the submission
   Google Form in a new tab.
 - **Contributor accounts** — Supabase email/password auth:
@@ -48,8 +57,13 @@ Open http://localhost:3000.
 ### Environment variables
 
 Auth configuration comes from environment variables only — no keys are ever
+<<<<<<< HEAD
 written into committed files. Create `.env` or `.env.local` (both git-ignored)
 at the project root with your Supabase project's values:
+=======
+written into committed files. Create `.env.local` (git-ignored) at the project
+root with your Supabase project's values:
+>>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
@@ -67,6 +81,7 @@ The same two variables must be set in Vercel project settings for production.
 | `npm start`        | Serve the production build        |
 | `npm run lint`     | Run ESLint                        |
 
+<<<<<<< HEAD
 ## Project structure
 
 ```
@@ -126,6 +141,11 @@ The conversion lives in `lib/entries.js`.
 
 One slug was normalised during migration: `muek jumping game` (had a space)
 became `muek-jumping-game`.
+=======
+
+Add the object to the `games` array, drop a photo into `public/images/`, and the
+new entry appears in search, browse, and its own game page automatically.
+>>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
 
 ## How search works
 
@@ -161,4 +181,8 @@ became `muek-jumping-game`.
   cream).
 - Every page and component has its own plain CSS module. No inline-styling
   framework, no CSS-in-JS.
+<<<<<<< HEAD
 - The signature motif is the `kramaStripe` — a checkered-scarf divider band.
+=======
+- The signature motif is the `kramaStripe` — a checkered-scarf divider band.
+>>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
