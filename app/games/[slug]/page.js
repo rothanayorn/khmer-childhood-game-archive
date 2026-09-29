@@ -70,6 +70,9 @@ export default async function GamePage({ params }) {
       <div className="kramaStripe" />
 
       <main className={`container ${styles.main}`}>
+        <h2 className={styles.stepsHeading}>About the game</h2>
+        <p className={styles.about}>{game.description}</p>
+
         <h2 className={styles.stepsHeading}>How to play</h2>
         <ol className={styles.steps}>
           {game.steps.map((step, i) => (
