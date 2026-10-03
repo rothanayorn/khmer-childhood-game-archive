@@ -91,6 +91,9 @@ app/
   games/[slug]/page.js  Per-game "how to play" page (reads Supabase)
   login/page.js         Sign-in page (centred form)
   signup/page.js        Create-account page (centred form)
+  submit/page.js        Create Entry form (sign-in required)
+  my-entries/page.js    List + edit the entries you created
+  edit/[slug]/page.js   Edit one of your own entries
   api/entries/route.js  GET /api/entries — the archive from Supabase
 components/
   SiteHeader.js         Header + auth area (email / log out, or log in / sign up)
@@ -117,7 +120,7 @@ The archive's entries live in an `entries` table in Supabase. The site reads
 them through the publishable key + row-level security (a `using (true)` policy:
 everyone may read).
 
-Create the schema with these three files, **in order**, in the Supabase SQL
+Create the schema with these files, **in order**, in the Supabase SQL
 editor (or via the Supabase CLI):
 
 1. `supabase/migrations/001_entries_table.sql` — the table + RLS policies
@@ -125,6 +128,10 @@ editor (or via the Supabase CLI):
    description, place, and steps columns
 3. `supabase/migrations/003_seed_entries.sql` — the 8 archive entries,
    migrated from `data/games.js`
+4. `supabase/migrations/004_storage_bucket.sql` — the `entry-images` Storage
+   bucket + its policies (required before photo uploads work)
+5. `supabase/migrations/005_edit_policy.sql` — tightens the update policy so an
+   owner can edit a row but never reassign it to another owner
 
 > Before step 3, sign up on the site once so a user row exists in
 > `auth.users`. The seed assigns `owner` to the oldest account; replace the

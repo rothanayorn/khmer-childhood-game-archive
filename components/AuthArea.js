@@ -43,6 +43,9 @@ export default function AuthArea() {
         <span className={styles.email} title={user.email}>
           {user.email}
         </span>
+        <Link href="/my-entries" className={styles.navLink}>
+          My entries
+        </Link>
         <button type="button" className={styles.logout} onClick={handleLogout}>
           Log out
         </button>

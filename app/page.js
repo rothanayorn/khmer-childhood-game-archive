@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import GameSearch from "@/components/GameSearch";
+import SubmitEntryButton from "@/components/SubmitEntryButton";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -28,6 +29,9 @@ export default function HomePage() {
             Collected from grandparents, cousins, and neighbours across Cambodia.
             Know a game that belongs here? Send it in.
           </p>
+          <div className={styles.footerActions}>
+            <SubmitEntryButton />
+          </div>
           </div>
       </footer>
     </>

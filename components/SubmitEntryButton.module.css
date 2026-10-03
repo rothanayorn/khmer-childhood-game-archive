@@ -1,0 +1,20 @@
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--color-indigo);
+  color: var(--color-bg-raised);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.submit:hover {
+  background: var(--color-laterite);
+}
