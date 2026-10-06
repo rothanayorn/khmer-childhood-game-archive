@@ -64,6 +64,12 @@ export default function LoginForm() {
         />
       </label>
 
+      <p className={styles.forgot}>
+        <Link href="/forgot-password" className={styles.switchLink}>
+          Forgot password?
+        </Link>
+      </p>
+
       {error && (
         <p className={styles.error} role="alert">
           {error}

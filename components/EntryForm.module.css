@@ -105,6 +105,12 @@
   text-decoration: underline;
 }
 
+.switch {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
 .submitBtn {
   display: inline-flex;
   align-items: center;

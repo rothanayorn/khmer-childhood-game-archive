@@ -91,6 +91,8 @@ app/
   games/[slug]/page.js  Per-game "how to play" page (reads Supabase)
   login/page.js         Sign-in page (centred form)
   signup/page.js        Create-account page (centred form)
+  forgot-password/page.js  Request a password reset email
+  auth/update-password/page.js  Set a new password from the reset link
   submit/page.js        Create Entry form (sign-in required)
   my-entries/page.js    List + edit the entries you created
   edit/[slug]/page.js   Edit one of your own entries
@@ -179,6 +181,10 @@ new entry appears in search, browse, and its own game page automatically.
 - If email confirmation is enabled on your Supabase project, a new sign-up shows a
   "check your email" message and the user confirms before signing in. With it
   disabled, sign-up signs the user in and redirects home like a login.
+- **Password reset** — the login page links to `/forgot-password`, which emails a
+  reset link that lands on `/auth/update-password`. Add those paths to
+  **Supabase Auth → URL Configuration → Redirect URLs** for `http://localhost:3000`
+  and your deployed origin.
 
 ## Styling
 

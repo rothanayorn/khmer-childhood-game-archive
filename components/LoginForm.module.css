@@ -38,6 +38,12 @@
   font-size: 0.9rem;
 }
 
+.forgot {
+  margin: -12px 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+}
+
 .submitBtn {
   display: inline-flex;
   align-items: center;
