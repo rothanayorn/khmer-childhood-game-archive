@@ -24,12 +24,27 @@ export default function SignupForm() {
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        // Confirmed users land on the confirmation callback page, which then
+        // sends them to /login. Without this, Supabase points the email link
+        // at the dashboard Site URL (the homepage), stranding users.
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
     });
 
     setBusy(false);
     if (authError) {
-      // Plain by design: never reveal why (e.g. "user already registered").
-      setError("We could not create your account. Please try again.");
+      // The one detail worth sharing is a duplicate account — withholding it
+      // makes users repeat registration, which is what we want to prevent.
+      // Everything else stays intentionally vague.
+      const detail = String(authError.message ?? "").toLowerCase();
+      if (detail.includes("already registered")) {
+        setError(
+          "An account with this email already exists. Check your inbox for the confirmation link, or sign in."
+        );
+      } else {
+        setError("We could not create your account. Please try again.");
+      }
       return;
     }
 
@@ -37,7 +52,7 @@ export default function SignupForm() {
     // still has to click the link Supabase just emailed them.
     if (!data.session) {
       setMessage(
-        "Check your email for a confirmation link to finish signing up."
+        "Registration successful! Please check your email to confirm your account."
       );
       return;
     }
@@ -45,6 +60,28 @@ export default function SignupForm() {
     // Email confirmation is disabled for this project, so sign-up also
     // signed the user in — head home the way a successful login would.
     router.push("/");
+  }
+
+  async function resendConfirmation() {
+    setMessage("");
+    setError("");
+    setBusy(true);
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    });
+    setBusy(false);
+    if (resendError) {
+      setError("Could not resend the email. Please try again.");
+      return;
+    }
+    setMessage(
+      "Confirmation email sent again — check your inbox, including spam."
+    );
   }
 
   return (
@@ -86,6 +123,17 @@ export default function SignupForm() {
         <p className={styles.success} role="status">
           {message}
         </p>
+      )}
+
+      {message && (
+        <button
+          type="button"
+          className={styles.resend}
+          disabled={busy}
+          onClick={resendConfirmation}
+        >
+          Resend confirmation email
+        </button>
       )}
 
       <button type="submit" className={styles.submitBtn} disabled={busy}>

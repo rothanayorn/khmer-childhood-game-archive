@@ -89,6 +89,12 @@
   font-size: 0.9rem;
 }
 
+.success {
+  margin: 0;
+  color: var(--color-jade);
+  font-size: 0.9rem;
+}
+
 .notice {
   background: var(--color-bg-raised);
   border: 1px dashed var(--color-line);

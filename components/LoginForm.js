@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -8,6 +8,16 @@ import styles from "./LoginForm.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
+  // The /auth/confirm callback redirects here with ?confirmed=1 after a
+  // successful email confirmation, so the page can show the expected message.
+  // Read on the client (after mount) so the page stays statically built.
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    setConfirmed(
+      new URLSearchParams(window.location.search).get("confirmed") === "1"
+    );
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -36,7 +46,14 @@ export default function LoginForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <>
+      {confirmed && (
+        <p className={styles.notice} role="status">
+          Your email has been confirmed. You can now sign in.
+        </p>
+      )}
+
+      <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.label}>
         Email
         <input
@@ -86,6 +103,7 @@ export default function LoginForm() {
           Create an account
         </Link>
       </p>
-    </form>
+      </form>
+    </>
   );
 }

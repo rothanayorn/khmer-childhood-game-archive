@@ -39,6 +39,7 @@ export default function EditEntryForm({ slug }) {
   const [previewUrl, setPreviewUrl] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   function setField(name, value) {
     setFields((prev) => ({ ...prev, [name]: value }));
@@ -55,7 +56,10 @@ export default function EditEntryForm({ slug }) {
         }
         const { data: rows, error: loadError } = await supabase
           .from("entries")
-          .select(`${ENTRY_COLUMNS}, owner`)
+          // `id` is required here: it becomes the `excludeId` for the
+          // duplicate check and the WHERE target for the update. Without it,
+          // the row being edited is treated as its own duplicate.
+          .select(`id, ${ENTRY_COLUMNS}, owner`)
           .eq("slug", slug)
           .limit(1);
         if (loadError || !rows || rows.length === 0) {
@@ -199,7 +203,8 @@ export default function EditEntryForm({ slug }) {
         await supabase.storage.from("entry-images").remove([oldStoragePath]);
       }
 
-      router.push(`/games/${slug}`);
+      setSaved(true);
+      setTimeout(() => router.push(`/games/${slug}`), 1200);
     } catch {
       if (uploadedPath) {
         await supabase.storage.from("entry-images").remove([uploadedPath]);
@@ -276,6 +281,12 @@ export default function EditEntryForm({ slug }) {
           Cancel
         </button>
       </div>
+
+      {saved && (
+        <p className={styles.success} role="status">
+          Your changes have been saved.
+        </p>
+      )}
     </form>
   );
 }
