@@ -83,6 +83,18 @@
   color: var(--color-ink-soft);
 }
 
+.labelText {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.required {
+  color: var(--color-laterite);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 .error {
   margin: 0;
   color: var(--color-laterite);

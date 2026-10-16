@@ -44,7 +44,9 @@ export default function ForgotPasswordForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <label className={styles.label}>
-        Email
+<span className={styles.labelText}>
+          Email <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="email"

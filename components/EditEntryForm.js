@@ -260,6 +260,7 @@ export default function EditEntryForm({ slug }) {
         onChange={setField}
         onPhotoChange={onPhotoChange}
         previewUrl={previewUrl}
+        photoRequired={false}
       />
 
       {error && (

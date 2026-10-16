@@ -3,11 +3,13 @@ import styles from "./EntryForm.module.css";
 // The ten field rows shared by the Create Entry form and the Edit Entry form.
 // Pure rendering — the owning form passes the current values plus an onChange
 // callback, and handles photo selection, busy state, and errors itself.
-export default function EntryFields({ values, onChange, onPhotoChange, previewUrl }) {
+export default function EntryFields({ values, onChange, onPhotoChange, previewUrl, photoRequired = true }) {
   return (
     <>
       <label className={styles.label}>
-        Name in Khmer
+        <span className={styles.labelText}>
+          Name in Khmer <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -18,7 +20,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Name in English
+        <span className={styles.labelText}>
+          Name in English <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -29,7 +33,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Tagline
+        <span className={styles.labelText}>Tagline</span>
         <span className={styles.optional}>(optional)</span>
         <input
           className={styles.input}
@@ -41,7 +45,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Description
+        <span className={styles.labelText}>
+          Description <span className={styles.required}>*</span>
+        </span>
         <textarea
           className={styles.textarea}
           rows={5}
@@ -52,7 +58,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        How to play / Steps
+        <span className={styles.labelText}>
+          How to play / Steps <span className={styles.required}>*</span>
+        </span>
         <span className={styles.optional}>one step per line, in order</span>
         <textarea
           className={styles.textarea}
@@ -66,7 +74,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Players
+        <span className={styles.labelText}>
+          Players <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -77,7 +87,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Materials
+        <span className={styles.labelText}>
+          Materials <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -88,7 +100,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Contributor name
+        <span className={styles.labelText}>
+          Contributor name <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -99,7 +113,9 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Place
+        <span className={styles.labelText}>
+          Place <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="text"
@@ -110,7 +126,10 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        Photo
+        <span className={styles.labelText}>
+          Photo
+          {photoRequired && <span className={styles.required}>*</span>}
+        </span>
         <span className={styles.optional}>one image up to 5 MB (no videos)</span>
         <input
           type="file"

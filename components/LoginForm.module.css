@@ -16,6 +16,18 @@
   color: var(--color-indigo);
 }
 
+.labelText {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.required {
+  color: var(--color-laterite);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 .input {
   width: 100%;
   font-family: var(--font-body);

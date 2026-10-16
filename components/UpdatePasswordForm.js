@@ -69,7 +69,9 @@ export default function UpdatePasswordForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <label className={styles.label}>
-        New password
+<span className={styles.labelText}>
+          New password <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="password"
@@ -83,7 +85,9 @@ export default function UpdatePasswordForm() {
       </label>
 
       <label className={styles.label}>
-        Confirm new password
+<span className={styles.labelText}>
+          Confirm new password <span className={styles.required}>*</span>
+        </span>
         <input
           className={styles.input}
           type="password"

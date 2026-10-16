@@ -18,6 +18,9 @@
   flex-wrap: wrap;
   gap: 22px;
   row-gap: 10px;
+  /* Keep the navigation pinned to the right edge even when the header
+     wraps onto two lines on narrow screens. */
+  margin-left: auto;
 }
 
 .navLink {
@@ -52,20 +55,18 @@
   font-family: var(--font-display);
   font-weight: 500;
   letter-spacing: 0.02em;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: var(--color-ink-soft);
   text-transform: uppercase;
 }
 
-/* Mobile: slightly smaller brand, navigation pinned to the right edge
-   (it wraps onto its own line on narrow screens). */
+/* Mobile: slightly smaller still, and tighter nav gaps. */
 @media (max-width: 420px) {
   .brandEnglish {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   .nav {
-    margin-left: auto;
     gap: 10px;
   }
 }
