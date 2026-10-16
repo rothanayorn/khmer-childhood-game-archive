@@ -111,3 +111,26 @@
   opacity: 0.6;
   cursor: default;
 }
+
+/* Phones: give the text room — smaller photo and the Edit/Delete buttons on
+   their own line underneath, instead of squeezing into the same row. */
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 72px 1fr;
+    row-gap: 12px;
+  }
+
+  .thumb {
+    width: 72px;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .khmer,
+  .title {
+    overflow-wrap: anywhere;
+  }
+}
