@@ -5,6 +5,7 @@
 
 .inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 14px;
@@ -14,7 +15,9 @@
 
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 22px;
+  row-gap: 10px;
 }
 
 .navLink {
@@ -52,4 +55,17 @@
   font-size: 0.95rem;
   color: var(--color-ink-soft);
   text-transform: uppercase;
+}
+
+/* Mobile: slightly smaller brand, navigation pinned to the right edge
+   (it wraps onto its own line on narrow screens). */
+@media (max-width: 420px) {
+  .brandEnglish {
+    font-size: 0.85rem;
+  }
+
+  .nav {
+    margin-left: auto;
+    gap: 10px;
+  }
 }
