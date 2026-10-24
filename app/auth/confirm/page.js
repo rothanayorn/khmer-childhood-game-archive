@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import ConfirmEmail from "@/components/ConfirmEmail";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export default function ConfirmEmailPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Email confirmation</p>
-          <h1 className={styles.heroTitle}>Confirm your email</h1>
+          <T k="confirm.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="confirm.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

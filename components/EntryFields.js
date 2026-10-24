@@ -1,14 +1,16 @@
+import { useI18n } from "./I18nProvider";
 import styles from "./EntryForm.module.css";
 
 // The ten field rows shared by the Create Entry form and the Edit Entry form.
 // Pure rendering — the owning form passes the current values plus an onChange
 // callback, and handles photo selection, busy state, and errors itself.
 export default function EntryFields({ values, onChange, onPhotoChange, previewUrl, photoRequired = true }) {
+  const { t } = useI18n();
   return (
     <>
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Name in Khmer <span className={styles.required}>*</span>
+          {t("field.nameKhmer")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -21,7 +23,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Name in English <span className={styles.required}>*</span>
+          {t("field.nameEnglish")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -33,8 +35,8 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       </label>
 
       <label className={styles.label}>
-        <span className={styles.labelText}>Tagline</span>
-        <span className={styles.optional}>(optional)</span>
+        <span className={styles.labelText}>{t("field.tagline")}</span>
+        <span className={styles.optional}>{t("field.taglineOptional")}</span>
         <input
           className={styles.input}
           type="text"
@@ -46,7 +48,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Description <span className={styles.required}>*</span>
+          {t("field.description")} <span className={styles.required}>*</span>
         </span>
         <textarea
           className={styles.textarea}
@@ -59,23 +61,21 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          How to play / Steps <span className={styles.required}>*</span>
+          {t("field.steps")} <span className={styles.required}>*</span>
         </span>
-        <span className={styles.optional}>one step per line, in order</span>
+        <span className={styles.optional}>{t("field.stepsHint")}</span>
         <textarea
           className={styles.textarea}
           rows={8}
           value={values.stepsText}
           onChange={(event) => onChange("stepsText", event.target.value)}
-          placeholder={
-            "One step per line, in the order you play them.\nExample:\nPlayers line up in a circle.\nOne player is chosen to be 'it'."
-          }
+          placeholder={t("field.stepsPlaceholder")}
         />
       </label>
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Players <span className={styles.required}>*</span>
+          {t("field.players")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -88,7 +88,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Materials <span className={styles.required}>*</span>
+          {t("field.materials")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -101,7 +101,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Contributor name <span className={styles.required}>*</span>
+          {t("field.contributor")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -114,7 +114,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Place <span className={styles.required}>*</span>
+          {t("field.place")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -127,10 +127,10 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
 
       <label className={styles.label}>
         <span className={styles.labelText}>
-          Photo
+          {t("field.photo")}
           {photoRequired && <span className={styles.required}>*</span>}
         </span>
-        <span className={styles.optional}>one image up to 5 MB (no videos)</span>
+        <span className={styles.optional}>{t("field.photoHint")}</span>
         <input
           type="file"
           accept="image/*"
@@ -142,7 +142,7 @@ export default function EntryFields({ values, onChange, onPhotoChange, previewUr
       {previewUrl && (
         <img
           src={previewUrl}
-          alt="Preview of the game photo"
+          alt={t("field.photoPreview")}
           className={styles.preview}
         />
       )}

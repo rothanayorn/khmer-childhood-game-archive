@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export default function ForgotPasswordPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Account help</p>
-          <h1 className={styles.heroTitle}>Reset your password</h1>
+          <T k="forgot.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="forgot.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

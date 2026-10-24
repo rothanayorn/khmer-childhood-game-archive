@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteHeader from "@/components/SiteHeader";
+import T from "@/components/T";
+import GameDetailHero from "@/components/GameDetailHero";
+import GameDetailBody from "@/components/GameDetailBody";
 import { createClient } from "@/lib/supabase/server";
-import { ENTRY_COLUMNS, toGame } from "@/lib/entries";
+import { ENTRY_COLUMNS, ENTRY_COLUMNS_KM, toGame } from "@/lib/entries";
 import styles from "./page.module.css";
 
 // Dynamic route — the archive lives in Supabase, so every request reads the
@@ -13,12 +16,24 @@ export default async function GamePage({ params }) {
   let row = null;
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const { data: rows, error: loadError } = await supabase
       .from("entries")
-      .select(ENTRY_COLUMNS)
+      .select(`${ENTRY_COLUMNS_KM}, owner`)
       .eq("slug", params.slug)
       .limit(1);
-    if (!error && data && data[0]) row = data[0];
+    if (loadError || !rows || rows.length === 0) {
+      // Migration 006 may not be applied yet — retry without the Khmer columns.
+      const retry = await supabase
+        .from("entries")
+        .select(`id, ${ENTRY_COLUMNS}, owner`)
+        .eq("slug", params.slug)
+        .limit(1);
+      if (!retry.error && retry.data && retry.data[0]) {
+        row = retry.data[0];
+      }
+      return;
+    }
+    row = rows[0];
   } catch {
     row = null;
   }
@@ -33,36 +48,13 @@ export default async function GamePage({ params }) {
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
           <Link href="/" className={styles.back}>
-            ← All games
+            ← <T k="detail.allGames" />
           </Link>
 
           <div className={styles.heroGrid}>
             <img src={game.image} alt="" aria-hidden="true" className={styles.heroImage} />
 
-            <div>
-              <h1 className={styles.nameKhmer} lang="km">
-                {game.nameKhmer}
-              </h1>
-              <p className={styles.nameEnglish}>{game.nameEnglish}</p>
-              <p className={styles.tagline}>{game.tagline}</p>
-
-              <dl className={styles.meta}>
-                <div>
-                  <dt>Players</dt>
-                  <dd>{game.players}</dd>
-                </div>
-                <div>
-                  <dt>You&rsquo;ll need</dt>
-                  <dd>{game.materials}</dd>
-                </div>
-                <div>
-                  <dt>Contributed by</dt>
-                  <dd>
-                    {game.contributor} · {game.place}
-                  </dd>
-                </div>
-              </dl>
-            </div>
+            <GameDetailHero game={game} />
           </div>
         </div>
       </section>
@@ -70,22 +62,7 @@ export default async function GamePage({ params }) {
       <div className="kramaStripe" />
 
       <main className={`container ${styles.main}`}>
-        <h2 className={styles.stepsHeading}>About the game</h2>
-        <p className={styles.about}>{game.description}</p>
-
-        <h2 className={styles.stepsHeading}>How to play</h2>
-        <ol className={styles.steps}>
-          {game.steps.map((step, i) => (
-            <li key={i} className={styles.step}>
-              <span className={styles.stepNumber}>{String(i + 1).padStart(2, "0")}</span>
-              <p>{step}</p>
-            </li>
-          ))}
-        </ol>
-
-        <Link href="/" className={styles.cta}>
-          ← Back to all games
-        </Link>
+        <GameDetailBody game={game} />
       </main>
     </>
   );

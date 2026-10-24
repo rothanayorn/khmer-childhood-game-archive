@@ -1,6 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import GameSearch from "@/components/GameSearch";
 import SubmitEntryButton from "@/components/SubmitEntryButton";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -10,10 +11,8 @@ export default function HomePage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>An archive, kept by the people who played</p>
-          <h1 className={styles.heroTitle}>
-            Khmer childhood games that children played before smartphones
-          </h1>
+          <T k="home.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="home.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 
@@ -25,10 +24,7 @@ export default function HomePage() {
 
       <footer className={styles.footer}>
         <div className="container">
-          <p>
-            Collected from grandparents, cousins, and neighbours across Cambodia.
-            Know a game that belongs here? Send it in.
-          </p>
+          <T k="home.footer" as="p" />
           <div className={styles.footerActions}>
             <SubmitEntryButton />
           </div>

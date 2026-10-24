@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./SubmitEntryButton.module.css";
 
 // The "Submit entry" button lives in the site footer and only makes sense for
@@ -10,6 +11,7 @@ import styles from "./SubmitEntryButton.module.css";
 // for visitors until the session cookie has been confirmed, so the footer
 // stays identical for logged-out visitors.
 export default function SubmitEntryButton() {
+  const { t } = useI18n();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function SubmitEntryButton() {
 
   return (
     <Link href="/submit" className={styles.submit}>
-      Submit entry <span aria-hidden="true">→</span>
+      {t("nav.submit")} <span aria-hidden="true">→</span>
     </Link>
   );
 }

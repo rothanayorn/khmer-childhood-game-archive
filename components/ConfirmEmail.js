@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./EntryForm.module.css";
 
 // Destination of the email confirmation link. This project uses PKCE
@@ -13,6 +14,7 @@ import styles from "./EntryForm.module.css";
 // that exchange, then hand the user to /login with a clear status.
 export default function ConfirmEmail() {
   const router = useRouter();
+  const { t } = useI18n();
   const [state, setState] = useState("checking"); // checking | invalid
   const [resendEmail, setResendEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -40,7 +42,7 @@ export default function ConfirmEmail() {
 
     const email = resendEmail.trim();
     if (!email) {
-      setError("Enter the email you registered with.");
+      setError(t("confirm.enterEmail"));
       return;
     }
 
@@ -56,26 +58,24 @@ export default function ConfirmEmail() {
     setBusy(false);
 
     if (resendError) {
-      setError("Could not resend the email. Please try again.");
+      setError(t("confirm.resendFail"));
       return;
     }
-    setMessage(
-      "Confirmation email sent again — check your inbox, including spam."
-    );
+    setMessage(t("confirm.resent"));
   }
 
   if (state === "checking") {
-    return <p className={styles.notice}>Confirming your email…</p>;
+    return <p className={styles.notice}>{t("confirm.checking")}</p>;
   }
 
   return (
     <>
       <p className={styles.notice}>
-        This confirmation link is invalid or has expired.{" "}
+        {t("confirm.invalid")}{" "}
         <Link href="/login" className={styles.switchLink}>
-          Sign in
+          {t("confirm.signIn")}
         </Link>{" "}
-        or resend a new confirmation email below.
+        {t("confirm.resendIntro")}
       </p>
 
       {message && (
@@ -86,7 +86,7 @@ export default function ConfirmEmail() {
 
       <form className={styles.form} onSubmit={resendConfirmation} noValidate>
         <label className={styles.label}>
-          Email
+          {t("confirm.email")}
           <input
             className={styles.input}
             type="email"
@@ -104,7 +104,7 @@ export default function ConfirmEmail() {
         )}
 
         <button type="submit" className={styles.submitBtn} disabled={busy}>
-          {busy ? "Sending…" : "Resend confirmation email"}
+          {busy ? t("confirm.sending") : t("confirm.resend")}
         </button>
       </form>
     </>

@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./SignupForm.module.css";
 
 export default function SignupForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -39,11 +41,9 @@ export default function SignupForm() {
       // Everything else stays intentionally vague.
       const detail = String(authError.message ?? "").toLowerCase();
       if (detail.includes("already registered")) {
-        setError(
-          "An account with this email already exists. Check your inbox for the confirmation link, or sign in."
-        );
+        setError(t("signup.duplicate"));
       } else {
-        setError("We could not create your account. Please try again.");
+        setError(t("signup.fail"));
       }
       return;
     }
@@ -51,9 +51,7 @@ export default function SignupForm() {
     // With email confirmation enabled there is no session yet — the user
     // still has to click the link Supabase just emailed them.
     if (!data.session) {
-      setMessage(
-        "Registration successful! Please check your email to confirm your account."
-      );
+      setMessage(t("signup.success"));
       return;
     }
 
@@ -76,19 +74,17 @@ export default function SignupForm() {
     });
     setBusy(false);
     if (resendError) {
-      setError("Could not resend the email. Please try again.");
+      setError(t("signup.resendFail"));
       return;
     }
-    setMessage(
-      "Confirmation email sent again — check your inbox, including spam."
-    );
+    setMessage(t("signup.resent"));
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Email <span className={styles.required}>*</span>
+          {t("signup.email")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -103,7 +99,7 @@ export default function SignupForm() {
 
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Password <span className={styles.required}>*</span>
+          {t("signup.password")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -136,18 +132,18 @@ export default function SignupForm() {
           disabled={busy}
           onClick={resendConfirmation}
         >
-          Resend confirmation email
+          {t("signup.resend")}
         </button>
       )}
 
       <button type="submit" className={styles.submitBtn} disabled={busy}>
-        {busy ? "Creating account…" : "Create account"}
+        {busy ? t("signup.creating") : t("signup.create")}
       </button>
 
       <p className={styles.switch}>
-        Already have an account?{" "}
+        {t("signup.already")}{" "}
         <Link href="/login" className={styles.switchLink}>
-          Sign in
+          {t("signup.signIn")}
         </Link>
       </p>
     </form>

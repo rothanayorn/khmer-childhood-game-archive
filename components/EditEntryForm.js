@@ -14,6 +14,7 @@ import {
 } from "@/lib/entries";
 import { validateEntry, MAX_PHOTO_BYTES } from "@/lib/entryForm";
 import EntryFields from "./EntryFields";
+import { useI18n } from "./I18nProvider";
 import styles from "./EntryForm.module.css";
 
 const EMPTY_FIELDS = {
@@ -30,6 +31,7 @@ const EMPTY_FIELDS = {
 
 export default function EditEntryForm({ slug }) {
   const router = useRouter();
+  const { t } = useI18n();
   // loading | signedOut | notFound | notOwner | ready
   const [status, setStatus] = useState("loading");
   const [entryId, setEntryId] = useState("");
@@ -105,14 +107,12 @@ export default function EditEntryForm({ slug }) {
     }
     if (!file.type.startsWith("image/")) {
       setPhoto(null);
-      setError(
-        "That file isn't an image — videos and other files are not accepted."
-      );
+      setError(t("validation.fileNotImage"));
       return;
     }
     if (file.size > MAX_PHOTO_BYTES) {
       setPhoto(null);
-      setError("The photo is too large — 5 MB or smaller, please.");
+      setError(t("validation.fileTooLarge"));
       return;
     }
     setPhoto(file);
@@ -141,7 +141,7 @@ export default function EditEntryForm({ slug }) {
     try {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
-        setError("Please sign in first.");
+        setError(t("editPage.signInFirst"));
         return;
       }
 
@@ -152,7 +152,7 @@ export default function EditEntryForm({ slug }) {
         excludeId: entryId,
       });
       if (duplicate) {
-        setError("An entry with this name already exists in the archive.");
+        setError(t("editPage.duplicate"));
         return;
       }
 
@@ -165,7 +165,7 @@ export default function EditEntryForm({ slug }) {
           .upload(uploadedPath, photo, { contentType: photo.type });
         if (uploadError) {
           uploadedPath = "";
-          setError("The photo could not be uploaded. Please try again.");
+          setError(t("editPage.photoFail"));
           return;
         }
         const { data: urlData } = supabase.storage
@@ -193,7 +193,7 @@ export default function EditEntryForm({ slug }) {
         if (uploadedPath) {
           await supabase.storage.from("entry-images").remove([uploadedPath]);
         }
-        setError("We could not save your changes. Please try again.");
+        setError(t("editPage.saveFail"));
         return;
       }
 
@@ -209,24 +209,23 @@ export default function EditEntryForm({ slug }) {
       if (uploadedPath) {
         await supabase.storage.from("entry-images").remove([uploadedPath]);
       }
-      setError("Something went wrong. Please try again.");
+      setError(t("editPage.unknown"));
     } finally {
       setBusy(false);
     }
   }
 
   if (status === "loading") {
-    return <p className={styles.notice}>Loading your entry…</p>;
+    return <p className={styles.notice}>{t("editPage.loading")}</p>;
   }
 
   if (status === "signedOut") {
     return (
       <p className={styles.notice}>
-        Please{" "}
         <Link href="/login" className={styles.switchLink}>
-          sign in
+          {t("nav.logIn")}
         </Link>{" "}
-        to edit your entries.
+        {t("editPage.signInRest")}
       </p>
     );
   }
@@ -234,9 +233,9 @@ export default function EditEntryForm({ slug }) {
   if (status === "notOwner") {
     return (
       <p className={styles.notice}>
-        You can only edit entries you created yourself.{" "}
+        {t("editPage.notOwner")}{" "}
         <Link href="/my-entries" className={styles.switchLink}>
-          Back to my entries
+          {t("editPage.backMyEntries")}
         </Link>
       </p>
     );
@@ -245,9 +244,9 @@ export default function EditEntryForm({ slug }) {
   if (status === "notFound") {
     return (
       <p className={styles.notice}>
-        That entry doesn&rsquo;t exist.{" "}
+        {t("editPage.notFound")}{" "}
         <Link href="/" className={styles.switchLink}>
-          Back to the archive
+          {t("editPage.backArchive")}
         </Link>
       </p>
     );
@@ -271,7 +270,7 @@ export default function EditEntryForm({ slug }) {
 
       <div className={styles.actions}>
         <button type="submit" className={styles.submitBtn} disabled={busy}>
-          {busy ? "Saving…" : "Save changes"}
+          {busy ? t("editPage.saving") : t("editPage.save")}
         </button>
         <button
           type="button"
@@ -279,13 +278,13 @@ export default function EditEntryForm({ slug }) {
           disabled={busy}
           onClick={() => router.push("/my-entries")}
         >
-          Cancel
+          {t("editPage.cancel")}
         </button>
       </div>
 
       {saved && (
         <p className={styles.success} role="status">
-          Your changes have been saved.
+          {t("editPage.saved")}
         </p>
       )}
     </form>

@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import EntryForm from "@/components/EntryForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -15,8 +16,8 @@ export default function SubmitPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Contribute to the archive</p>
-          <h1 className={styles.heroTitle}>Submit an entry</h1>
+          <T k="submit.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="submit.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

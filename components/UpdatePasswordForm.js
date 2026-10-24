@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./EntryForm.module.css";
 
 // Where Supabase's reset email lands. The browser client picks the recovery
 // token out of the URL automatically, so getUser() here confirms the session
 // and updateUser() sets the new password within it.
 export default function UpdatePasswordForm() {
+  const { t } = useI18n();
   const [status, setStatus] = useState("checking"); // checking | ready | invalid
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -30,11 +32,11 @@ export default function UpdatePasswordForm() {
     setMessage("");
 
     if (!password.trim() || password.trim().length < 6) {
-      setError("Your password must be at least 6 characters.");
+      setError(t("updatePassword.short"));
       return;
     }
     if (password !== confirm) {
-      setError("The two passwords do not match.");
+      setError(t("updatePassword.mismatch"));
       return;
     }
 
@@ -44,22 +46,22 @@ export default function UpdatePasswordForm() {
     setBusy(false);
 
     if (updateError) {
-      setError("We could not update your password. Please try again.");
+      setError(t("updatePassword.fail"));
       return;
     }
-    setMessage("Your password has been updated.");
+    setMessage(t("updatePassword.updated"));
   }
 
   if (status === "checking") {
-    return <p className={styles.notice}>Checking your reset link…</p>;
+    return <p className={styles.notice}>{t("updatePassword.checking")}</p>;
   }
 
   if (status === "invalid") {
     return (
       <p className={styles.notice}>
-        This reset link is invalid or has expired.{" "}
+        {t("updatePassword.invalid")}{" "}
         <Link href="/forgot-password" className={styles.switchLink}>
-          Request a new one
+          {t("updatePassword.requestNew")}
         </Link>
         .
       </p>
@@ -70,7 +72,7 @@ export default function UpdatePasswordForm() {
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <label className={styles.label}>
 <span className={styles.labelText}>
-          New password <span className={styles.required}>*</span>
+          {t("updatePassword.password")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -86,7 +88,7 @@ export default function UpdatePasswordForm() {
 
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Confirm new password <span className={styles.required}>*</span>
+          {t("updatePassword.confirm")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -113,14 +115,11 @@ export default function UpdatePasswordForm() {
       )}
 
       <button type="submit" className={styles.submitBtn} disabled={busy}>
-        {busy ? "Updating…" : "Update password"}
+        {busy ? t("updatePassword.updating") : t("updatePassword.update")}
       </button>
 
       <p className={styles.switch}>
-        Back to{" "}
-        <Link href="/login" className={styles.switchLink}>
-          sign in
-        </Link>
+        {t("updatePassword.back")} <Link href="/login" className={styles.switchLink}>{t("updatePassword.signIn")}</Link>
       </p>
     </form>
   );

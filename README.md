@@ -134,6 +134,10 @@ editor (or via the Supabase CLI):
    bucket + its policies (required before photo uploads work)
 5. `supabase/migrations/005_edit_policy.sql` — tightens the update policy so an
    owner can edit a row but never reassign it to another owner
+6. `supabase/migrations/006_entries_khmer_columns.sql` — optional Khmer content
+   columns + per-entry UPDATE templates; fill in the Khmer text, then run it.
+   The app reads these columns and shows entries fully in Khmer (with a
+   fallback until 006 is applied)
 
 > Before step 3, sign up on the site once so a user row exists in
 > `auth.users`. The seed assigns `owner` to the oldest account; replace the

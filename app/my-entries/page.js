@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import MyEntries from "@/components/MyEntries";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export default function MyEntriesPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Your contributions</p>
-          <h1 className={styles.heroTitle}>My entries</h1>
+          <T k="myEntries.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="myEntries.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

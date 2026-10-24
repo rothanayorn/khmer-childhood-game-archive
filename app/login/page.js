@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import LoginForm from "@/components/LoginForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -15,8 +16,8 @@ export default function LoginPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Welcome back</p>
-          <h1 className={styles.heroTitle}>Sign in to the archive</h1>
+          <T k="login.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="login.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

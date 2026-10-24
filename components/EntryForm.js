@@ -10,6 +10,7 @@ import {
   findDuplicateEntry,
   pickUniqueSlug,
 } from "@/lib/entries";
+import { useI18n } from "./I18nProvider";
 import { validateEntry, MAX_PHOTO_BYTES } from "@/lib/entryForm";
 import styles from "./EntryForm.module.css";
 
@@ -27,6 +28,7 @@ const EMPTY_FIELDS = {
 
 export default function EntryForm() {
   const router = useRouter();
+  const { t } = useI18n();
   // Only authenticated users may submit; the form is a no-op otherwise.
   const [authGate, setAuthGate] = useState("loading"); // loading | signedIn | signedOut
 
@@ -60,14 +62,12 @@ export default function EntryForm() {
     }
     if (!file.type.startsWith("image/")) {
       setPhoto(null);
-      setError(
-        "That file isn't an image — videos and other files are not accepted."
-      );
+      setError(t("validation.fileNotImage"));
       return;
     }
     if (file.size > MAX_PHOTO_BYTES) {
       setPhoto(null);
-      setError("The photo is too large — 5 MB or smaller, please.");
+      setError(t("validation.fileTooLarge"));
       return;
     }
     setPhoto(file);
@@ -92,7 +92,7 @@ export default function EntryForm() {
       // Owner comes from the authenticated session only — never the form.
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
-        setError("Please sign in first to submit an entry.");
+        setError(t("submit.signInFirst"));
         return;
       }
 
@@ -102,7 +102,7 @@ export default function EntryForm() {
         nameKhmer: cleaned.nameKhmer,
       });
       if (duplicate) {
-        setError("An entry with this name already exists in the archive.");
+        setError(t("submit.duplicate"));
         return;
       }
 
@@ -115,7 +115,7 @@ export default function EntryForm() {
 
       if (uploadError) {
         uploadedPath = "";
-        setError("The photo could not be uploaded. Please try again.");
+        setError(t("submit.photoFail"));
         return;
       }
 
@@ -138,7 +138,7 @@ export default function EntryForm() {
         // The upload succeeded but the entry didn't — remove the orphan so
         // storage stays tidy and no incomplete row exists.
         await supabase.storage.from("entry-images").remove([uploadedPath]);
-        setError("We could not save your entry. Please try again.");
+        setError(t("submit.insertFail"));
         return;
       }
 
@@ -147,24 +147,23 @@ export default function EntryForm() {
       if (uploadedPath) {
         await supabase.storage.from("entry-images").remove([uploadedPath]);
       }
-      setError("Something went wrong. Please try again.");
+      setError(t("submit.unknown"));
     } finally {
       setBusy(false);
     }
   }
 
   if (authGate === "loading") {
-    return <p className={styles.notice}>Checking your session…</p>;
+    return <p className={styles.notice}>{t("submit.checking")}</p>;
   }
 
   if (authGate === "signedOut") {
     return (
       <p className={styles.notice}>
-        Please{" "}
         <Link href="/login" className={styles.switchLink}>
-          sign in
+          {t("nav.logIn")}
         </Link>{" "}
-        to submit an entry.
+        {t("submit.signInRest")}
       </p>
     );
   }
@@ -186,7 +185,7 @@ export default function EntryForm() {
 
       <div className={styles.actions}>
         <button type="submit" className={styles.submitBtn} disabled={busy}>
-          {busy ? "Submitting…" : "Submit entry"}
+          {busy ? t("submit.submitting") : t("submit.btn")}
         </button>
         <button
           type="button"
@@ -194,14 +193,12 @@ export default function EntryForm() {
           disabled={busy}
           onClick={() => router.push("/")}
         >
-          Cancel
+          {t("submit.cancel")}
         </button>
       </div>
 
       <p className={styles.hint}>
-        Entries should be Khmer childhood or traditional children&rsquo;s games,
-        with accurate information. Share only photos you are allowed to use.
-        The archive owner may review, edit, or remove submissions.
+        {t("submit.hint")}
       </p>
     </form>
   );

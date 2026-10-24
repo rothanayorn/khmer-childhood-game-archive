@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./AuthArea.module.css";
 
 // Renders inside the site header. Visitors see Log in / Sign up; signed-in
@@ -10,6 +11,7 @@ import styles from "./AuthArea.module.css";
 // so pages stay statically pre-rendered while this component confirms the
 // cookie in the browser and keeps the header in sync after sign in/out.
 export default function AuthArea() {
+  const { t } = useI18n();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -44,10 +46,10 @@ export default function AuthArea() {
           {user.email}
         </span>
         <Link href="/my-entries" className={styles.navLink}>
-          My entries
+          {t("nav.myEntries")}
         </Link>
         <button type="button" className={styles.logout} onClick={handleLogout}>
-          Log out
+          {t("nav.logOut")}
         </button>
       </>
     );
@@ -56,10 +58,10 @@ export default function AuthArea() {
   return (
     <>
       <Link href="/login" className={styles.navLink}>
-        Log in
+        {t("nav.logIn")}
       </Link>
       <Link href="/signup" className={styles.navLink}>
-        Sign up
+        {t("nav.signUp")}
       </Link>
     </>
   );

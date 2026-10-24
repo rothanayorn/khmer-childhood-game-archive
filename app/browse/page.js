@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import GameSearch from "@/components/GameSearch";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -15,10 +16,8 @@ export default function BrowsePage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>The whole collection</p>
-          <h1 className={styles.heroTitle}>
-            Browse &amp; search every game in the archive
-          </h1>
+          <T k="browse.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="browse.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

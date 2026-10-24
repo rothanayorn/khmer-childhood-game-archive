@@ -1,4 +1,5 @@
 import "./globals.css";
+import { I18nProvider } from "@/components/I18nProvider";
 
 export const metadata = {
   title: "Khmer Childhood Games",
@@ -16,7 +17,19 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        {/* Apply the saved language before first paint so Khmer users don't
+            see an English flash; the client provider then takes over. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var l=localStorage.getItem('lang');if(l!=='en'&&l!=='km'){l='en';}document.documentElement.lang=l;document.documentElement.setAttribute('data-lang',l);}catch(e){}",
+          }}
+        />
+      </head>
+      <body>
+        <I18nProvider>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

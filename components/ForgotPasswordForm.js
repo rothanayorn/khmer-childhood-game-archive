@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./EntryForm.module.css";
 
 // Asks Supabase to email a reset link that lands on /auth/update-password.
 // Those redirect paths must be allowed in Supabase Auth → URL Configuration.
 export default function ForgotPasswordForm() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export default function ForgotPasswordForm() {
 
     const trimmed = email.trim();
     if (!trimmed) {
-      setError("Enter the email address for your account.");
+      setError(t("forgot.enterEmail"));
       return;
     }
 
@@ -35,17 +37,17 @@ export default function ForgotPasswordForm() {
 
     // Plain by design: never confirm whether an account exists.
     if (resetError) {
-      setError("We could not send a reset email. Please try again.");
+      setError(t("forgot.fail"));
       return;
     }
-    setMessage("Check your email for a password reset link.");
+    setMessage(t("forgot.sent"));
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Email <span className={styles.required}>*</span>
+          {t("forgot.email")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -71,13 +73,13 @@ export default function ForgotPasswordForm() {
       )}
 
       <button type="submit" className={styles.submitBtn} disabled={busy}>
-        {busy ? "Sending…" : "Send reset link"}
+        {busy ? t("forgot.sending") : t("forgot.send")}
       </button>
 
       <p className={styles.switch}>
-        Remembered it?{" "}
+        {t("forgot.remembered")}{" "}
         <Link href="/login" className={styles.switchLink}>
-          Sign in
+          {t("forgot.signIn")}
         </Link>
       </p>
     </form>

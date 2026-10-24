@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import EditEntryForm from "@/components/EditEntryForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export default function EditEntryPage({ params }) {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Your contribution</p>
-          <h1 className={styles.heroTitle}>Edit entry</h1>
+          <T k="editPage.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="editPage.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

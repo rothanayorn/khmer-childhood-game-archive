@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "./I18nProvider";
 import styles from "./LoginForm.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { t } = useI18n();
   // The /auth/confirm callback redirects here with ?confirmed=1 after a
   // successful email confirmation, so the page can show the expected message.
   // Read on the client (after mount) so the page stays statically built.
@@ -38,7 +40,7 @@ export default function LoginForm() {
 
     setBusy(false);
     if (authError) {
-      setError("Invalid email or password");
+      setError(t("login.invalid"));
       return;
     }
 
@@ -49,14 +51,14 @@ export default function LoginForm() {
     <>
       {confirmed && (
         <p className={styles.notice} role="status">
-          Your email has been confirmed. You can now sign in.
+          {t("login.confirmed")}
         </p>
       )}
 
       <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Email <span className={styles.required}>*</span>
+          {t("login.email")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -71,7 +73,7 @@ export default function LoginForm() {
 
       <label className={styles.label}>
 <span className={styles.labelText}>
-          Password <span className={styles.required}>*</span>
+          {t("login.password")} <span className={styles.required}>*</span>
         </span>
         <input
           className={styles.input}
@@ -87,7 +89,7 @@ export default function LoginForm() {
 
       <p className={styles.forgot}>
         <Link href="/forgot-password" className={styles.switchLink}>
-          Forgot password?
+          {t("login.forgot")}
         </Link>
       </p>
 
@@ -98,13 +100,13 @@ export default function LoginForm() {
       )}
 
       <button type="submit" className={styles.submitBtn} disabled={busy}>
-        {busy ? "Signing in…" : "Sign in"}
+        {busy ? t("login.signingIn") : t("login.signIn")}
       </button>
 
       <p className={styles.switch}>
-        New to the archive?{" "}
+        {t("login.newHere")}{" "}
         <Link href="/signup" className={styles.switchLink}>
-          Create an account
+          {t("login.createAccount")}
         </Link>
       </p>
       </form>

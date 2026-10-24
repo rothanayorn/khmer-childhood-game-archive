@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import SignupForm from "@/components/SignupForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -15,8 +16,8 @@ export default function SignupPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Join the archive</p>
-          <h1 className={styles.heroTitle}>Create your account</h1>
+          <T k="signup.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="signup.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 

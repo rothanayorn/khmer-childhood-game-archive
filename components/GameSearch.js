@@ -3,9 +3,11 @@
 import { useEffect, useId, useState } from "react";
 import GameCard from "./GameCard";
 import { filterGames, pickRecommendations } from "@/lib/search";
+import { useI18n } from "./I18nProvider";
 import styles from "./GameSearch.module.css";
 
 export default function GameSearch() {
+  const { t, lang } = useI18n();
   const inputId = useId();
   const [games, setGames] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
@@ -48,7 +50,9 @@ export default function GameSearch() {
           <span className={styles.labelKhmer} lang="km">
             ស្វែងរកល្បែង
           </span>
-          <span className={styles.labelEnglish}>Search the archive</span>
+          {lang === "en" && (
+            <span className={styles.labelEnglish}>{t("search.label")}</span>
+          )}
         </label>
 
         <div className={styles.inputWrap}>
@@ -58,7 +62,7 @@ export default function GameSearch() {
             className={styles.input}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="ស្វែងរក… ឧ. ចោលឈូង, tug, Sophea / Search…"
+            placeholder={t("search.placeholder")}
             autoComplete="off"
           />
           {hasQuery && (
@@ -66,7 +70,7 @@ export default function GameSearch() {
               type="button"
               className={styles.clear}
               onClick={() => setQuery("")}
-              aria-label="Clear search"
+              aria-label={t("search.clear")}
             >
               <span aria-hidden="true">×</span>
             </button>
@@ -75,24 +79,19 @@ export default function GameSearch() {
 
         <p className={styles.count} aria-live="polite">
           <span lang="km">ល្បែង</span> {results.length} ·{" "}
-          {results.length === 1 ? "game" : "games"} found
+          {lang === "en" &&
+            (results.length === 1 ? t("search.count") : t("search.countPlural"))}{" "}
+          {t("search.countFound")}
         </p>
       </form>
 
       {status === "loading" ? (
-        <p className={styles.loading}>Loading the archive…</p>
+        <p className={styles.loading}>{t("search.loading")}</p>
       ) : status === "error" ? (
-        <p className={styles.error}>
-          Could not load games from the archive. Check that Supabase is set up
-          (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) and
-          that the entries table exists and is seeded.
-        </p>
+        <p className={styles.error}>{t("search.error")}</p>
       ) : status === "ready" && games.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyEnglish}>
-            The archive is empty right now. Check back soon — the first entries
-            will appear here.
-          </p>
+          <p className={styles.emptyEnglish}>{t("search.emptyTitle")}</p>
         </div>
       ) : results.length > 0 ? (
         <div className={styles.grid}>
@@ -105,10 +104,11 @@ export default function GameSearch() {
           <p className={styles.emptyKhmer} lang="km">
             រកមិនឃើញ «{query}» ទេ។ សាកឈ្មោះជាភាសាខ្មែរ ឬអង់គ្លេស, អ្នកចូលរួម​ ឬ​ ទីកន្លែង​ ។
           </p>
-          <p className={styles.emptyEnglish}>
-            No games match &ldquo;{query}&rdquo;. Try a Khmer or English name, a
-            contributor, or a place.
-          </p>
+          {lang === "en" && (
+            <p className={styles.emptyEnglish}>
+              {t("search.noMatch", { query })}
+            </p>
+          )}
 
           <div className={styles.recommend}>
             <p className={styles.recommendLabel}>
@@ -116,7 +116,7 @@ export default function GameSearch() {
                 សាកល្បែងទាំងនេះជំនួស
               </span>
               <span className={styles.recommendEnglish}>
-                Try one of these instead:
+                {t("search.tryInstead")}
               </span>
             </p>
             <div className={styles.chips}>
@@ -130,7 +130,9 @@ export default function GameSearch() {
                   <span className={styles.chipKhmer} lang="km">
                     {game.nameKhmer}
                   </span>
-                  <span className={styles.chipEnglish}>{game.nameEnglish}</span>
+                  {lang === "en" && (
+                    <span className={styles.chipEnglish}>{game.nameEnglish}</span>
+                  )}
                 </button>
               ))}
             </div>

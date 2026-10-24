@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import UpdatePasswordForm from "@/components/UpdatePasswordForm";
+import T from "@/components/T";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -14,8 +15,8 @@ export default function UpdatePasswordPage() {
 
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>Password reset</p>
-          <h1 className={styles.heroTitle}>Choose a new password</h1>
+          <T k="updatePassword.eyebrow" as="p" className={styles.eyebrow} />
+          <T k="updatePassword.title" as="h1" className={styles.heroTitle} />
         </div>
       </section>
 
