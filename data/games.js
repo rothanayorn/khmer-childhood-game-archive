@@ -87,9 +87,9 @@ const games = [
     ],
   },
   {
-    slug: "chab-kon-kaeb",
+    slug: "chab-kon-klaeng",
     nameKhmer: "ចាប់កូនខ្លែង",
-    nameEnglish: "Chab Kon Kaeb",
+    nameEnglish: "Chab Kon Klaeng",
     tagline: "A winding chain game where a 'mother hen' shields her chicks from a hawk.",
     description:
       "Players form a chain behind a lead 'mother' player, hands on the shoulders or waist of the person in front, while a 'hawk' tries to tag the last person in line. The whole line snakes and turns to protect its tail.",

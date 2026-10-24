@@ -37,6 +37,7 @@ export default function EntryForm() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   function setField(name, value) {
     setFields((prev) => ({ ...prev, [name]: value }));
@@ -142,7 +143,9 @@ export default function EntryForm() {
         return;
       }
 
-      router.push(`/games/${slug}`);
+      // Success: the entry is now pending review — tell the user instead of
+      // sending them to a detail page that isn't published yet.
+      setSubmitted(true);
     } catch {
       if (uploadedPath) {
         await supabase.storage.from("entry-images").remove([uploadedPath]);
@@ -151,6 +154,17 @@ export default function EntryForm() {
     } finally {
       setBusy(false);
     }
+  }
+
+  if (submitted) {
+    return (
+      <p className={styles.notice} role="status">
+        {t("submit.success")}{" "}
+        <Link href="/my-entries" className={styles.switchLink}>
+          {t("nav.myEntries")}
+        </Link>
+      </p>
+    );
   }
 
   if (authGate === "loading") {

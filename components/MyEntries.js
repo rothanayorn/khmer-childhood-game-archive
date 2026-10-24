@@ -7,6 +7,18 @@ import { storagePathFromUrl } from "@/lib/entries";
 import { useI18n } from "./I18nProvider";
 import styles from "./MyEntries.module.css";
 
+const STATUS_KEYS = {
+  pending: "statusPending",
+  published: "statusPublished",
+  returned: "statusReturned",
+};
+
+const STATUS_VARIANT = {
+  pending: styles.pending,
+  published: styles.published,
+  returned: styles.returned,
+};
+
 // Lists the entries the signed-in user created, each with an Edit link.
 // The database enforces ownership (RLS); this only reads the user's own rows.
 export default function MyEntries() {
@@ -59,7 +71,7 @@ export default function MyEntries() {
         }
         const { data, error: listError } = await supabase
           .from("entries")
-          .select("id, slug, title, name_khmer, photo_url, created_at")
+          .select("id, slug, title, name_khmer, photo_url, created_at, status")
           .eq("owner", authData.user.id)
           .order("created_at", { ascending: false });
         if (listError) {
@@ -120,6 +132,11 @@ export default function MyEntries() {
             {lang === "en" && (
               <p className={styles.title}>{entry.title}</p>
             )}
+            <p className={`${styles.status} ${STATUS_VARIANT[entry.status] || ""}`}>
+              {STATUS_KEYS[entry.status]
+                ? t("myEntries." + STATUS_KEYS[entry.status])
+                : entry.status || ""}
+            </p>
           </div>
           <div className={styles.actions}>
             <Link href={`/edit/${entry.slug}`} className={styles.edit}>

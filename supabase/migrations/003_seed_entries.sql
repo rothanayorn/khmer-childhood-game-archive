@@ -137,7 +137,7 @@ insert into entries
   (slug, title, name_khmer, tagline, description, players, materials, contributor_name, place, photo_url, steps, owner)
 values
   (
-    'chab-kon-kaeb', 'Chab Kon Kaeb', 'ចាប់កូនខ្លែង',
+    'chab-kon-klaeng', 'Chab Kon Klaeng', 'ចាប់កូនខ្លែង',
     'A winding chain game where a ''mother hen'' shields her chicks from a hawk.',
     'Players form a chain behind a lead ''mother'' player, hands on the shoulders or waist of the person in front, while a ''hawk'' tries to tag the last person in line. The whole line snakes and turns to protect its tail.',
     '8–20 players plus one hawk',

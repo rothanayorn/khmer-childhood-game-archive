@@ -64,6 +64,25 @@
   margin: 0;
 }
 
+.status {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+
+.pending {
+  color: #8a6d1d;
+}
+
+.published {
+  color: var(--color-jade);
+}
+
+.returned {
+  color: var(--color-laterite);
+}
+
 .edit {
   display: inline-flex;
   align-items: center;

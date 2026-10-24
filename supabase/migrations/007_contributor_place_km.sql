@@ -34,11 +34,11 @@ update entries set
   place_km = 'ព្រៃវែង'
 where slug = 'teanh-prot';
 
--- 5. Chab Kon Kaeb — Rithy Sok, Prey Veng
+-- 5. Chab Kon Klaeng — Rithy Sok, Prey Veng
 update entries set
   contributor_name_km = 'រិទ្ធី សុខ',
   place_km = 'ព្រៃវែង'
-where slug = 'chab-kon-kaeb';
+where slug = 'chab-kon-klaeng';
 
 -- 6. Muek Jumping Game — Nita, Prey Veng
 update entries set

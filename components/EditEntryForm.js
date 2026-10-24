@@ -184,6 +184,21 @@ export default function EditEntryForm({ slug }) {
       });
       delete row.owner; // ownership never changes when editing
 
+      // Saving an edit sends the entry back to pending review, unless the
+      // current user is a reviewer (decided by the project's existing RPC).
+      // If the RPC call fails, treat the user as a regular contributor so the
+      // entry stays pending rather than silently skipping review.
+      let isReviewer = false;
+      try {
+        const { data: reviewer } = await supabase.rpc("is_reviewer");
+        isReviewer = reviewer === true;
+      } catch {
+        isReviewer = false;
+      }
+      if (!isReviewer) {
+        row.status = "pending";
+      }
+
       const { error: updateError } = await supabase
         .from("entries")
         .update(row)

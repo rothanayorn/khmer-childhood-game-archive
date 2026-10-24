@@ -22,6 +22,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("entries")
       .select(ENTRY_COLUMNS_KM)
+      .eq("status", "published")
       .order("created_at", { ascending: false });
 
     // Migration 006 may not be applied yet, which keeps the Khmer columns
@@ -30,6 +31,7 @@ export async function GET() {
       const retry = await supabase
         .from("entries")
         .select(ENTRY_COLUMNS)
+        .eq("status", "published")
         .order("created_at", { ascending: false });
       return Response.json(
         retry.error

@@ -115,7 +115,7 @@ update entries set
     'ជាទូទៅ គេប្រកួតចំនួន ៣ ជុំ ដើម្បីកំណត់ក្រុមឈ្នះ ដោយក្រុមដែលឈ្នះច្រើនជាងគេគឺជាអ្នកឈ្នះចុងក្រោយ។'
   ]
 where slug = 'teanh-prot';
--- 5. Chab Kon Kaeb  (ចាប់កូនខ្លែង)
+-- 5. Chab Kon Klaeng  (ចាប់កូនខ្លែង)
 --    tagline (EN): "A winding chain game where a 'mother hen' shields her chicks from a hawk."
 --    description (EN): "Players form a chain behind a lead 'mother' player while
 --      a 'hawk' tries to tag the last person in line. The whole line snakes and
@@ -135,7 +135,7 @@ update entries set
     'ប្រសិនបើសត្វស្ទាំងចាប់អ្នកលេងនៅចុងជួរបាន អ្នកលេងនោះត្រូវចេញពីការលេង ឬក្លាយជាសត្វស្ទាំងថ្មី អាស្រ័យលើក្បួនលេងតាមតំបន់នីមួយៗ។',
     'ល្បែងបន្តរហូតដល់នៅសល់កូនមាន់តែប៉ុន្មាននាក់ ឬរហូតដល់អ្នកលេងទាំងអស់សើចសប្បាយ និងអស់កម្លាំង។'
   ]
-where slug = 'chab-kon-kaeb';
+where slug = 'chab-kon-klaeng';
 
 -- 6. Muek Jumping Game  (ល្បែងលោតមឹក)
 --    tagline (EN): "A traditional jumping game where children hop through a squid-shaped drawing on the ground."
@@ -221,7 +221,7 @@ where slug = 'stech-chong';
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- 9. English title correction — matches the archive's own transliteration.
---    The URL slug stays chab-kon-kaeb.
+--    The URL slug stays chab-kon-klaeng.
 -- ───────────────────────────────────────────────────────────────────────────
 update entries set title = 'Chab Kon Klaeng'
-where slug = 'chab-kon-kaeb';
+where slug = 'chab-kon-klaeng';
