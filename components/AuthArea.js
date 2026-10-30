@@ -43,7 +43,7 @@ export default function AuthArea() {
     return (
       <>
         <span className={styles.email} title={user.email}>
-          {user.email}
+          {user.user_metadata?.username || user.email}
         </span>
         <Link href="/my-entries" className={styles.navLink}>
           {t("nav.myEntries")}

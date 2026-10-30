@@ -12,6 +12,7 @@ export default function SignupForm() {
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -20,6 +21,20 @@ export default function SignupForm() {
     event.preventDefault();
     setError("");
     setMessage("");
+
+    // Username may be English or Khmer; it is stored in the user's Supabase
+    // auth metadata (no schema change) and shown in the header instead of the
+    // raw email address.
+    const name = username.trim();
+    if (!name) {
+      setError(t("signup.usernameRequired"));
+      return;
+    }
+    if (name.length > 30) {
+      setError(t("signup.usernameTooLong"));
+      return;
+    }
+
     setBusy(true);
 
     const supabase = createClient();
@@ -31,6 +46,7 @@ export default function SignupForm() {
         // sends them to /login. Without this, Supabase points the email link
         // at the dashboard Site URL (the homepage), stranding users.
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        data: { username: name },
       },
     });
 
@@ -82,6 +98,23 @@ export default function SignupForm() {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
+      <label className={styles.label}>
+<span className={styles.labelText}>
+          {t("signup.username")} <span className={styles.required}>*</span>
+        </span>
+        <span className={styles.optional}>{t("signup.usernameHint")}</span>
+        <input
+          className={styles.input}
+          type="text"
+          name="username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          autoComplete="username"
+          maxLength={30}
+          required
+        />
+      </label>
+
       <label className={styles.label}>
 <span className={styles.labelText}>
           {t("signup.email")} <span className={styles.required}>*</span>
