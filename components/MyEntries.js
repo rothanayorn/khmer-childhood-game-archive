@@ -25,6 +25,7 @@ export default function MyEntries() {
   const { t, lang } = useI18n();
   const [status, setStatus] = useState("loading"); // loading | signedOut | ready
   const [entries, setEntries] = useState([]);
+  const [comments, setComments] = useState([]);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState("");
 
@@ -79,10 +80,33 @@ export default function MyEntries() {
           return;
         }
         setEntries(data ?? []);
+
+        // For returned entries, load the reviewer's comment so the owner can
+        // see why it was sent back.
+        const returned = (data ?? []).filter(
+          (entry) => entry.status === "returned"
+        );
+        if (returned.length > 0) {
+          const { data: rows } = await supabase
+            .from("review_comments")
+            .select("entry_id, comment, created_at")
+            .in(
+              "entry_id",
+              returned.map((entry) => entry.id)
+            )
+            .order("created_at", { ascending: false });
+          setComments(rows ?? []);
+        }
+
         setStatus("ready");
       })
       .catch(() => setStatus("signedOut"));
   }, []);
+
+  function reasonFor(id) {
+    const found = comments.find((comment) => comment.entry_id === id);
+    return found ? found.comment : "";
+  }
 
   if (status === "loading") {
     return <p className={styles.notice}>{t("myEntries.loading")}</p>;
@@ -137,6 +161,11 @@ export default function MyEntries() {
                 ? t("myEntries." + STATUS_KEYS[entry.status])
                 : entry.status || ""}
             </p>
+            {entry.status === "returned" && reasonFor(entry.id) && (
+              <p className={styles.reason}>
+                {t("myEntries.returnReason")}: {reasonFor(entry.id)}
+              </p>
+            )}
           </div>
           <div className={styles.actions}>
             <Link href={`/edit/${entry.slug}`} className={styles.edit}>

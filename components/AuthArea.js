@@ -13,6 +13,8 @@ import styles from "./AuthArea.module.css";
 export default function AuthArea() {
   const { t } = useI18n();
   const [user, setUser] = useState(null);
+  // Whether the signed-in user is a reviewer — controls the header Review link.
+  const [reviewer, setReviewer] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -20,7 +22,19 @@ export default function AuthArea() {
     // Confirm whatever the session cookie claims.
     supabase.auth
       .getUser()
-      .then(({ data }) => setUser(data.user))
+      .then(({ data }) => {
+        setUser(data.user);
+        if (data.user) {
+          supabase
+            .rpc("is_reviewer")
+            .then(({ data: reviewerData }) =>
+              setReviewer(reviewerData === true)
+            )
+            .catch(() => setReviewer(false));
+        } else {
+          setReviewer(false);
+        }
+      })
       .catch(() => setUser(null));
 
     // Stay in sync after sign in / sign out / token refresh, mid-page too.
@@ -45,6 +59,11 @@ export default function AuthArea() {
         <span className={styles.email} title={user.email}>
           {user.user_metadata?.username || user.email}
         </span>
+        {reviewer && (
+          <Link href="/review" className={styles.navLink}>
+            {t("nav.review")}
+          </Link>
+        )}
         <Link href="/my-entries" className={styles.navLink}>
           {t("nav.myEntries")}
         </Link>
