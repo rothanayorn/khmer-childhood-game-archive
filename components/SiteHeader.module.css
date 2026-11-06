@@ -61,13 +61,58 @@
   text-transform: uppercase;
 }
 
-/* Mobile: slightly smaller still, and tighter nav gaps. */
-@media (max-width: 420px) {
-  .brandEnglish {
-    font-size: 0.75rem;
+/* Hamburger button: hidden on desktop, shown only below the nav breakpoint. */
+.menuButton {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg-raised);
+  cursor: pointer;
+  padding: 0;
+}
+
+.menuBar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--color-ink);
+}
+
+/* Mobile: collapse the nav behind the hamburger button. */
+@media (max-width: 680px) {
+  .inner {
+    position: relative;
+  }
+
+  .menuButton {
+    display: flex;
   }
 
   .nav {
-    gap: 10px;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+    order: 3;
+    margin-left: 0;
+    padding-top: 14px;
+  }
+
+  .navOpen {
+    display: flex;
+  }
+}
+
+/* Smallest phones: slightly smaller brand text too. */
+@media (max-width: 420px) {
+  .brandEnglish {
+    font-size: 0.75rem;
   }
 }

@@ -6,26 +6,25 @@ import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "./I18nProvider";
 import styles from "./SubmitEntryButton.module.css";
 
-// The "Submit entry" button lives in the site footer and only makes sense for
-// signed-in users (the /submit page defends itself too). It renders nothing
-// for visitors until the session cookie has been confirmed, so the footer
-// stays identical for logged-out visitors.
+// The "Submit entry" button lives on the home page and is always visible,
+// signed in or not — it's the call to action for the whole archive. Signed-in
+// visitors go straight to the submit form; signed-out visitors go to /login
+// first (the /submit page also defends itself, so this is a convenience
+// redirect, not the only guard).
 export default function SubmitEntryButton() {
   const { t } = useI18n();
-  const [show, setShow] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth
       .getUser()
-      .then(({ data }) => setShow(Boolean(data.user)))
-      .catch(() => setShow(false));
+      .then(({ data }) => setSignedIn(Boolean(data.user)))
+      .catch(() => setSignedIn(false));
   }, []);
 
-  if (!show) return null;
-
   return (
-    <Link href="/submit" className={styles.submit}>
+    <Link href={signedIn ? "/submit" : "/login"} className={styles.submit}>
       {t("nav.submit")} <span aria-hidden="true">→</span>
     </Link>
   );

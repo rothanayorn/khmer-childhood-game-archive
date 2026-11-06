@@ -47,10 +47,11 @@ export default function GameSearch() {
         onSubmit={(event) => event.preventDefault()}
       >
         <label htmlFor={inputId} className={styles.label}>
-          <span className={styles.labelKhmer} lang="km">
-            ស្វែងរកល្បែង
-          </span>
-          {lang === "en" && (
+          {lang === "km" ? (
+            <span className={styles.labelKhmer} lang="km">
+              ស្វែងរកល្បែង
+            </span>
+          ) : (
             <span className={styles.labelEnglish}>{t("search.label")}</span>
           )}
         </label>
@@ -78,10 +79,18 @@ export default function GameSearch() {
         </div>
 
         <p className={styles.count} aria-live="polite">
-          <span lang="km">ល្បែង</span> {results.length} ·{" "}
-          {lang === "en" &&
-            (results.length === 1 ? t("search.count") : t("search.countPlural"))}{" "}
-          {t("search.countFound")}
+          {lang === "km" ? (
+            <>
+              <span lang="km">ល្បែង</span> {results.length}{" "}
+              {t("search.countFound")}
+            </>
+          ) : (
+            <>
+              {results.length}{" "}
+              {results.length === 1 ? t("search.count") : t("search.countPlural")}{" "}
+              {t("search.countFound")}
+            </>
+          )}
         </p>
       </form>
 
@@ -101,10 +110,11 @@ export default function GameSearch() {
         </div>
       ) : (
         <div className={styles.empty}>
-          <p className={styles.emptyKhmer} lang="km">
-            រកមិនឃើញ «{query}» ទេ។ សាកឈ្មោះជាភាសាខ្មែរ ឬអង់គ្លេស, អ្នកចូលរួម​ ឬ​ ទីកន្លែង​ ។
-          </p>
-          {lang === "en" && (
+          {lang === "km" ? (
+            <p className={styles.emptyKhmer} lang="km">
+              រកមិនឃើញ «{query}» ទេ។ សាកឈ្មោះជាភាសាខ្មែរ ឬអង់គ្លេស, អ្នកចូលរួម​ ឬ​ ទីកន្លែង​ ។
+            </p>
+          ) : (
             <p className={styles.emptyEnglish}>
               {t("search.noMatch", { query })}
             </p>
@@ -112,12 +122,15 @@ export default function GameSearch() {
 
           <div className={styles.recommend}>
             <p className={styles.recommendLabel}>
-              <span className={styles.recommendKhmer} lang="km">
-                សាកល្បែងទាំងនេះជំនួស
-              </span>
-              <span className={styles.recommendEnglish}>
-                {t("search.tryInstead")}
-              </span>
+              {lang === "km" ? (
+                <span className={styles.recommendKhmer} lang="km">
+                  សាកល្បែងទាំងនេះជំនួស
+                </span>
+              ) : (
+                <span className={styles.recommendEnglish}>
+                  {t("search.tryInstead")}
+                </span>
+              )}
             </p>
             <div className={styles.chips}>
               {recommendations.map((game) => (
