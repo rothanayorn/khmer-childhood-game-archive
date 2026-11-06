@@ -16,6 +16,7 @@
 .nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 22px;
   row-gap: 10px;
   /* Keep the navigation pinned to the right edge even when the header
