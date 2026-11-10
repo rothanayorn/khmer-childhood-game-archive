@@ -1,205 +1,323 @@
 # Khmer Childhood Games
 
-A living archive of Khmer childhood games, collected from the people who grew up
-playing them — grandparents, cousins, and neighbours across Cambodia. Every entry
-is bilingual (Khmer + English) and includes who contributed it and where. Built
-with Next.js (App Router) and Supabase for the ICT 340 Living Archive project.
+A living archive of Khmer childhood games — ល្បែងកុមារខ្មែរ — collected from people in Prey Veng and kept in Khmer first. Built for ICT 340 at AUPP.
 
-## What's in here
+## 1. What this is
 
-<<<<<<< HEAD
-- **Browse & search** — a searchable grid of game cards, served from the
-  Supabase `entries` table. Search works in Khmer
-=======
-- **Browse & search** — a searchable grid of game cards. Search works in Khmer
->>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
-  and English (`ចោលឈូង`, `tug`, a contributor name, a place) with proper
-  Unicode normalisation, so typing variations still match. When a search comes up
-  empty, the page suggests a few games as a fallback.
-- **Game pages** — each entry has its own page with a photo, metadata (players,
-<<<<<<< HEAD
-  materials, contributor, place) and a step-by-step "How to play" guide, read
-  live from the Supabase `entries` table at request time.
-=======
-  materials, contributor, place) and a step-by-step "How to play" guide. Generated
-  statically at build time.
->>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
-- **Submit an entry** — a "Send" button on the home page opens the submission
-  Google Form in a new tab.
-- **Contributor accounts** — Supabase email/password auth:
-  - `/signup` — create an account (with a plain "check your email" confirmation
-    notice when email confirmation is enabled on the project).
-  - `/login` — sign in. Failed logins always show only `Invalid email or password`
-    — nothing more specific is ever leaked. A successful login redirects home.
-  - The site header shows a signed-in user their email plus a **Log out** button;
-    visitors see **Log in** and **Sign up** links instead.
-  - The sign-up and log-in pages are centred on screen and styled like the rest
-    of the site.
+This is a bilingual archive of the games Khmer children played before smartphones: ចោលឈូង, លាក់កន្សែង, បោះអង្គញ់, ទាញព្រ័ត្រ, and the rest of the set that follows. A stranger can browse every published game, search in Khmer or English, read who contributed it and where, and follow a step-by-step "how to play." A signed-in contributor can send in a new game; a reviewer can publish it or return it with a written reason. I built it this semester so those rules, names, and the people who still remember them are not lost with the playgrounds they were played on.
 
-## Tech stack
+## 2. Who it's for
 
-- [Next.js](https://nextjs.org) (App Router) + React — JavaScript only, no TypeScript
-- Plain CSS modules per component/page (no CSS framework)
-- [Supabase](https://supabase.com) — `@supabase/supabase-js` + `@supabase/ssr` for
-  server and client session handling
+The people who played these games, and the younger Khmer who did not get the chance. That shaped the site in specific ways:
 
-Exact installed versions live in `package.json`.
+- **Khmer first.** The Khmer name is always the heading of a card and of a game page. English is the second line, not the title. The whole interface switches to Khmer (labels, buttons, statuses, review reasons). I did not treat Khmer as a translation afterthought.
+- **Phones first.** Below 680 px the navigation collapses into a hamburger. Cards, the review queue, and My Entries restack at 480 px so they stay readable on a small screen.
+- **Slow connections.** Next.js App Router, no CSS framework, no component library, one JSON call to load the archive. Photos are ordinary `jpg`/`png`/`webp` files, not autoplaying media.
+- **Sources are named.** Every card and every detail page shows the contributor and the place. Nothing in the archive is anonymous unless that was the contributor's choice.
 
-## Getting started
+## 3. How it works
 
-```bash
+Next.js (App Router, JavaScript only) runs on Vercel. Supabase holds accounts, entries, review comments, reviewer status, and photos. No TypeScript, no CSS framework, no state library.
+
+### System architecture
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                          CLIENT  ·  browser                             │
+│                 phone (hamburger < 680px)  or  laptop                   │
+│                                                                         │
+│   visitor (logged out)          contributor / reviewer (signed in)      │
+│   • home / browse / search      • everything a visitor sees, plus:      │
+│   • game detail (published)     • /submit   • /my-entries               │
+│   • login / signup              • /review   (reviewer only)             │
+│   • EN / ខ្មែរ switcher          • edit / delete own entries             │
+└──────────────┬──────────────────────────────────────┬──────────────────┘
+               │ HTTPS                                 │ HTTPS
+               │ public pages + /api/entries           │ supabase-js
+               ▼                                       ▼
+┌──────────────────────────────────────┐  ┌──────────────────────────────┐
+│        NEXT.JS 15  ·  VERCEL          │  │      SUPABASE JS  (client)   │
+│        App Router · JavaScript only  │  │      publishable (anon) key  │
+│                                       │  └──────────────┬───────────────┘
+│  Server Components                    │                 │
+│  ├── app/page.js          home       │  ┌──────────────▼───────────────┐
+│  ├── app/browse/          archive    │  │  Auth      Storage   Postgres│
+│  ├── app/games/[slug]/    one game   │  │  sign in   upload     RLS    │
+│  ├── app/login /signup    accounts   │  └──────────────────────────────┘
+│  ├── app/submit/          new entry  │
+│  ├── app/my-entries/      own rows   │  Server-side Supabase
+│  ├── app/review/          gated      │  lib/supabase/server.js
+│  ├── app/auth/confirm/    email      │  (cookie session, next/headers)
+│  ├── app/auth/update-password/       │
+│  └── app/api/entries/     JSON       │  Client-side Supabase
+│      └── published only              │  lib/supabase/client.js
+│                                       │  (browser session, cookies)
+│  Shared: SiteHeader · i18n · lib/     │
+└──────────────────────┬────────────────┘
+                       │ service role is NOT used
+                       │ publishable key + user JWT
+                       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                    SUPABASE  ·  Postgres 15                             │
+│                                                                         │
+│  ┌─────────────┐   ┌──────────────────────┐   ┌─────────────────────┐  │
+│  │  AUTH       │   │  PUBLIC TABLES       │   │  STORAGE            │  │
+│  │             │   │                      │   │                     │  │
+│  │ auth.users  │   │  entries             │   │  bucket:            │  │
+│  │  email      │◄──│   owner  uuid  FK    │   │  entry-images       │  │
+│  │  password   │   │   status text        │   │  public read        │  │
+│  │  metadata:  │   │   title / name_khmer │   │  owner-only write   │  │
+│  │   username  │   │   *_km columns       │   │  image/*  ≤ 5 MB    │  │
+│  └──────┬──────┘   │   photo_url ─────────┼──►│  entries/<uuid>.ext │  │
+│         │          ├──────────────────────┤   └─────────────────────┘  │
+│         │          │  review_comments     │                            │
+│         │◄─────────│   entry_id  FK       │   ┌─────────────────────┐  │
+│         │          ├──────────────────────┤   │  RPC  (sec definer) │  │
+│         │          │  reviewers           │   │  is_reviewer()      │  │
+│         │◄─────────│   user_id uuid       │   │  review_entry(      │  │
+│         │  1 row = │   (dashboard insert  │   │    entry_id uuid,   │  │
+│         │  reviewer│    only — no API)    │   │    decision text)   │  │
+│         │          └──────────────────────┘   └─────────────────────┘  │
+│                                                                         │
+│  RLS on every table. Grants + policies in migrations 001/004/005/       │
+│  008/009. status + the two functions were created in the SQL editor.    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Database relationships (ERD)
+
+```
+   auth.users                     entries                       review_comments
+  ┌───────────┐    1         N  ┌──────────────────┐   1      N  ┌──────────────────┐
+  │ id        │────────────────►│ owner            │────────────►│ entry_id         │
+  │ email     │                 │ id  (uuid PK)    │             │ author_id        │
+  │ metadata. │                 │ slug  UNIQUE     │             │ comment          │
+  │  username │                 │ status           │             │ created_at       │
+  └─────┬─────┘                 │ photo_url ───────┼──► storage  └──────────────────┘
+        │                       │ name_khmer       │    bucket
+        │ 1                     │ tagline / desc   │
+        │                       │ players / mats   │       reviewers
+        │                       │ place / steps[]  │      ┌──────────────────┐
+        └───────────────────────│ contributor_name │      │ user_id          │
+          owner / author        │ *_km translations│      │  = one reviewer  │
+                                └──────────────────┘      └──────────────────┘
+                                                          dashboard insert only
+                                                          no API write path
+```
+
+### Tables
+
+- `entries` — one row per game. Owner (`uuid` → `auth.users`), `title` (English name), `name_khmer`, `slug`, `photo_url`, `players`, `materials`, `contributor_name`, `place`, `steps text[]`, Khmer columns from migrations 006/007, and `status`.
+- `review_comments` — `entry_id`, `author_id`, `comment`, `created_at`. The reason a reviewer returned an entry.
+- `reviewers` — `user_id uuid` linking to one `auth.users` account. A row *is* reviewer status. Assignment is manual, in the Supabase dashboard; the app cannot write this table.
+- `auth.users` — Supabase Auth. Email + password. Usernames live in `user_metadata`.
+- Storage bucket `entry-images` — public read, owner-only write. 5 MB / image MIME types.
+
+### The three statuses
+
+```
+                    submit form
+                        │  (form never sends status;
+                        │   DB default = 'pending')
+                        ▼
+                 ┌─────────────┐   owner edits
+                 │   pending   │──────────────────────────┐
+                 └──────┬──────┘   (goes back to pending,  │
+                        │           unless is_reviewer())  │
+       review_entry     │                                  │
+       'published'      │     review_entry 'returned'      │
+                        │     + comment in review_comments │
+                        ▼                                  ▼
+                 ┌─────────────┐                    ┌─────────────┐
+                 │  published  │                    │  returned   │
+                 │  (public)   │                    │ (owner sees │
+                 └─────────────┘                    │  reason on  │
+                        ▲                           │ /my-entries)│
+                        │                           └──────┬──────┘
+                        └──────────────────────────────────┘
+                             owner edits → pending again
+```
+
+- `pending` — just submitted, or edited back into the queue. Not on the public site.
+- `published` — live on home, browse, search, and the game page.
+- `returned` — sent back with a reason. Owner sees it on My Entries and can edit and resubmit (which puts it back to `pending`).
+
+
+### SQL that was run in the Supabase SQL editor and is not in a numbered migration
+
+These have to exist or the reviewer flow does not work. They were created by hand, which is why they are written down here:
+
+```sql
+-- status is not in migrations 001–009
+alter table entries add column if not exists status text not null default 'pending';
+
+-- reviewers table already exists in the live project (user_id uuid → one account)
+
+create or replace function is_reviewer()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from reviewers where user_id = auth.uid()
+  );
+$$;
+
+create or replace function review_entry(entry_id uuid, decision text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not is_reviewer() then
+    return false;
+  end if;
+  if decision not in ('published', 'returned') then
+    return false;
+  end if;
+  update entries
+  set status = decision
+  where id = entry_id and status = 'pending';
+  return found;
+end;
+$$;
+```
+
+## 4. Security decisions
+
+**The gate, and why `review_entry` lives in the database.**
+The publishable Supabase key ships to every browser. Anything the client can call, a stranger can call from the console. So the rule "only a reviewer may change `status`" cannot live in a hidden button or a Next.js redirect — those are UI. It lives in `review_entry()`, a `SECURITY DEFINER` function that (1) re-checks `is_reviewer()` inside the function itself, (2) accepts only `'published'` or `'returned'`, and (3) updates a row **only if it is still `pending`**. A non-reviewer who calls the RPC gets `false` and nothing changes. A hidden Publish button on `/review` is convenience for a reviewer; it protects nothing by itself.
+
+`/review` is also gated server-side (`app/review/page.js` calls `is_reviewer()` before rendering the queue). If that call fails, the page treats the visitor as not a reviewer. That is UX, not the security boundary.
+
+**Decision: what a returned entry says.**
+A reviewer cannot return an entry without writing a reason. `ReviewQueue` blocks the empty comment in the UI, and the reason is inserted into `review_comments`. The owner reads it on My Entries. I would rather a contributor get a specific "the steps skip how the teams are chosen" than a silent `returned` badge.
+
+**Decision: reviewers cannot take down a published entry.**
+`review_entry` only touches rows that are still `pending`. There is no `'unpublished'` / `'taken down'` path in the RPC. If a published entry needs to come down, the owner can delete it (RLS allows that), or the project owner can do it in the dashboard. I did not want a reviewer account to be a silent takedown tool for someone else's live entry.
+
+**Decision: search does not show a contributor their own pending entry.**
+`/api/entries` — and therefore home, browse, and search — returns `status = 'published'` only. A contributor sees their own pending and returned work on `/my-entries`, not mixed into the public archive. The public face of the archive stays published-only; drafts live in one place the owner controls.
+
+**Decision: nobody can make themselves a reviewer.**
+`reviewers` has RLS, no insert/update/delete policy for `anon` or `authenticated`, table grants revoked except `SELECT` for `authenticated`, and that `SELECT` is own-row only. Promoting someone is a dashboard insert by me. I would rather assign reviewers by hand than build a self-serve role that a console one-liner can abuse.
+
+**Known gap, on purpose in the current SQL.**
+Migration 001's `entries` SELECT policy is still `using (true)`. A stranger with the publishable key who queries the `entries` table directly (not through `/api/entries`) can read `pending` and `returned` rows. The shipped site does not show those rows. Closing this means replacing that policy with `status = 'published' or owner = auth.uid() or is_reviewer()`. I have not run that replacement as a numbered migration yet.
+
+## 5. AI use
+
+1. Ox Alpha by Cline – Initial Website Development
+
+I initially used Ox Alpha through Cline to build the entire website with five entries. At that time, I had not obtained an API key yet. Although the website was functional, I was not satisfied with its design and overall structure. This led me to look for another model to improve the website's appearance.
+
+2. Claude in the Browser – Website Redesign
+
+I used Claude through the browser to redesign the website because I was not satisfied with the design generated by Ox Alpha. I chose to use Claude in the browser instead of Cline because I wanted to save my Cline tokens for other tasks that were more important.
+
+3. Claude Opus (Fable) by Cline – Image Replacement
+
+I used Claude Opus through Cline to make a small change to the website. Specifically, I wanted to replace the placeholder images with my actual images. Although the task was relatively simple, it cost me $0.30. After reviewing the changes, I decided to replace the remaining images myself to save more tokens.
+
+4. moonshotai/kimi-latest – Main Website Builder
+
+I have been using Kimi since the beginning of the project, and I am very satisfied with its performance. It is my primary model for building the website, especially when creating and modifying entire webpages. I also use it to ask questions about my existing codebase and infrastructure because it already has context about how my project is structured.
+
+For example, when I want to add more entries to the archive, I ask Kimi to explain how I can do it myself instead of asking it to implement everything. This helps me understand my own project while saving API costs. I would definitely choose this model again because it consistently produces results that meet my expectations.
+
+5. OpenRouter Free – JSON Fixing and Code Review
+
+I initially used OpenRouter Free to fix a syntax problem in my JSON file. I am not sure which specific model was used because I did not select one myself.
+
+Later, I started using OpenRouter Free as a separate code-review agent. Instead of asking it to modify my code, I use it to identify potential problems and provide suggestions for improvement. Having a separate agent review the code helps me identify issues that I might overlook when focusing on implementation. I would continue using it because this separate review process improves my development workflow.
+
+6. OpenRouter: z-ai/glm-5.2 – Project Advisor
+
+I used GLM-5.2 as an advisor when making decisions about my project. I asked it for recommendations and suggestions whenever I wanted to introduce new features or make changes to the website. However, I initially thought this model was free, but later discovered that it was not. Therefore, I do not think I will continue using it. I would rather switch to a free alternative and save my budget for the AI agent responsible for building the website.
+
+7. DeepSeek V4 Flash – Authentication and Database Development
+
+I started using DeepSeek V4 Flash for authentication because it was affordable and performed better than I expected. It helped me implement the sign-up, log-in, and log-out features. The model understood my prompts and generated the code I needed. However, I was not completely satisfied with the design because it did not match my expectations. Nevertheless, its coding quality and ability to follow instructions were good, so I decided to continue using it.
+
+As the project became more complex, I used DeepSeek V4 Flash throughout my codebase to read and understand existing code, plan changes, and generate code based on my instructions. It was particularly useful when migrating data and working with database structures.
+
+I also continued using it to implement the entry review system and database security features. It helped me introduce pending and published statuses for entries and work on database policies to control access. I chose this model because it is affordable, generates good-quality code, and follows my instructions well.
+
+Overall, I would choose DeepSeek V4 Flash again because I am satisfied with its coding quality and cost. However, I learned that I still need to review and test AI-generated code myself to ensure that everything works correctly and securely. In the future, I would like to try another model and compare its coding quality, accuracy, and ability to follow instructions with DeepSeek V4 Flash.
+
+## 6. Sources and credits
+
+Every published entry names its contributor and the place, on the card and on the game page, in English and in Khmer. The eight games in the archive at submission:
+
+| Game | Khmer | Contributor | Place | Photo in `public/images/` |
+|---|---|---|---|---|
+| Chol Chhoung | ចោលឈូង | Sophea Ly | Prey Veng | `chol-chhoung.jpg` |
+| Leak Kanseng | លាក់កន្សែង | Vantha Chan | Prey Veng | `leak-kanseng.png` |
+| Bos Angkunh | បោះអង្គញ់ | Bunthoeun Prak | Prey Veng | `bos-angkunh.webp` |
+| Teanh Prot | ទាញព្រ័ត្រ | Chenda Meas | Prey Veng | `teanh-prot.jpg` |
+| Chab Kon Klaeng | ចាប់កូនខ្លែង | Rithy Sok | Prey Veng | `chab-kon-kaeb.jpg` |
+| Muek Jumping Game | ល្បែងលោតមឹក | Nita | Prey Veng | `muek-jumping-game.jpg` |
+| Rubber Band Jumping Game | លេងលូតកៅស៊ូ | Chea Visal | Prey Veng | `lot-kausu.jpg` |
+| Stech Chong | ស្តេចចង់ | Sok Karuna | Prey Veng | `stech-chong.jpg` |
+
+I am listing these names as they appear in the archive. Before I submit, I will confirm with each person that they are okay being named in a public AUPP project, and I will change any of these lines to "asked not to be named" if that was the answer. I will not invent a permission that was not asked for.
+
+`bay-khom.jpg` is also in `public/images/` but is not attached to a published entry yet.
+
+Photographs for the seed entries live in `public/images/` under the filenames above. I still need to write the photographer next to each filename: if I took the photo, I will say so; if the contributor or a family member sent it, I will put their name there; if it came from somewhere else, I will credit that source or replace the photo. I will not leave an uncredited image in a public archive.
+
+No lorem ipsum. No stock "user one / user two." If a later submission comes from someone who wants to stay unnamed, this is the sentence I will use: *a [relationship] in [place] who asked not to be named.*
+
+## 7. Running it locally
+
+```sh
+git clone https://github.com/rothanayorn/khmer-childhood-game-archive.git
+cd khmer-childhood-game-archive
 npm install
+```
+
+Create `.env.local` (never committed) with these two names only — no values in this README:
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+```
+
+The publishable (anon) key is public by design — it ships to every browser. The service-role key is not used anywhere in this app and must not be put in `.env.local` for this project. Set the same two names in Vercel → Settings → Environment Variables.
+
+Then:
+
+```sh
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open `http://localhost:3000`. To recreate the database, run migrations 001–009 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
 
-### Environment variables
+`npm run build` is the check I used after every code change.
 
-Auth configuration comes from environment variables only — no keys are ever
-<<<<<<< HEAD
-written into committed files. Create `.env` or `.env.local` (both git-ignored)
-at the project root with your Supabase project's values:
-=======
-written into committed files. Create `.env.local` (git-ignored) at the project
-root with your Supabase project's values:
->>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
+## 8. Submission checklist
 
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-```
+- Live URL loads logged out and shows published entries only: yes, (URL)
+- A stranger cannot publish their own entry through the page or the console: yes, tested (date)
+- Logged out, the API returns nothing pending or returned: yes, tested (date)
+- Contributors can edit and delete only their own entries: yes
+- No secrets anywhere in the repo history: yes, checked with (how)
+- At least eight real entries, each with a credited source: yes, (count)
+- Khmer renders on every screen a user meets, including the queue: yes
+- Works at phone width: yes, tested on (device or browser width)
+- No test entries, lorem ipsum or TODO comments in shipped pages: yes
+- No console errors on the main pages: yes
+- jesseorndorff is a collaborator on this repo: yes
+- Supabase project restored and awake on (date)
+- Demo video link opens in a private window: yes, (link)
+- Reflection pasted in the Canvas submission: yes
+- Posted in the Show Your Archive discussion: yes
+- Q&A slot booked for (date and time)
 
-The same two variables must be set in Vercel project settings for production.
+---
 
-### Scripts
+Repo: <https://github.com/rothanayorn/khmer-childhood-game-archive>
 
-| Command            | What it does                      |
-| ------------------ | --------------------------------- |
-| `npm run dev`      | Start the dev server              |
-| `npm run build`    | Production build (lint included)  |
-| `npm start`        | Serve the production build        |
-| `npm run lint`     | Run ESLint                        |
-
-<<<<<<< HEAD
-## Project structure
-
-```
-app/
-  page.js               Home page (hero, search, submit button)
-  browse/page.js        Browse & search every entry
-  games/[slug]/page.js  Per-game "how to play" page (reads Supabase)
-  login/page.js         Sign-in page (centred form)
-  signup/page.js        Create-account page (centred form)
-  forgot-password/page.js  Request a password reset email
-  auth/update-password/page.js  Set a new password from the reset link
-  submit/page.js        Create Entry form (sign-in required)
-  my-entries/page.js    List + edit the entries you created
-  edit/[slug]/page.js   Edit one of your own entries
-  api/entries/route.js  GET /api/entries — the archive from Supabase
-components/
-  SiteHeader.js         Header + auth area (email / log out, or log in / sign up)
-  AuthArea.js           Header auth widget (client component)
-  GameSearch.js         Bilingual search + recommendations (client component)
-  GameCard.js           One card in the browse grid
-  LoginForm.js          Sign-in form (Supabase)
-  SignupForm.js         Create-account form (Supabase)
-data/
-  games.js              Archive entries (kept as the seed source for Supabase)
-lib/
-  entries.js            Maps the Supabase entries table to the game shape
-  search.js             Bilingual search + recommendation logic
-  supabase/
-    server.js           Server Supabase client (@supabase/ssr cookie pattern)
-    client.js           Browser Supabase client
-supabase/migrations/    001 table + RLS · 002 extra columns · 003 seed
-public/images/          Game photos
-```
-
-## Database setup (Supabase `entries` table)
-
-The archive's entries live in an `entries` table in Supabase. The site reads
-them through the publishable key + row-level security (a `using (true)` policy:
-everyone may read).
-
-Create the schema with these files, **in order**, in the Supabase SQL
-editor (or via the Supabase CLI):
-
-1. `supabase/migrations/001_entries_table.sql` — the table + RLS policies
-2. `supabase/migrations/002_entries_columns.sql` — slug, Khmer name, tagline,
-   description, place, and steps columns
-3. `supabase/migrations/003_seed_entries.sql` — the 8 archive entries,
-   migrated from `data/games.js`
-4. `supabase/migrations/004_storage_bucket.sql` — the `entry-images` Storage
-   bucket + its policies (required before photo uploads work)
-5. `supabase/migrations/005_edit_policy.sql` — tightens the update policy so an
-   owner can edit a row but never reassign it to another owner
-6. `supabase/migrations/006_entries_khmer_columns.sql` — optional Khmer content
-   columns + per-entry UPDATE templates; fill in the Khmer text, then run it.
-   The app reads these columns and shows entries fully in Khmer (with a
-   fallback until 006 is applied)
-
-> Before step 3, sign up on the site once so a user row exists in
-> `auth.users`. The seed assigns `owner` to the oldest account; replace the
-> `(select id from auth.users order by created_at limit 1)` subquery with your
-> own UUID if you want a specific owner.
-
-All three files are idempotent (upsert by `slug`, `if not exists` guards), so
-re-running them is safe. `data/games.js` is kept as the migration source of
-truth — edit it and re-run step 3 to re-seed.
-
-Column map (database → app): `title→nameEnglish`, `name_khmer→nameKhmer`,
-`photo_url→image`, `contributor_name→contributor`, `steps (text[])→steps`.
-The conversion lives in `lib/entries.js`.
-
-One slug was normalised during migration: `muek jumping game` (had a space)
-became `muek-jumping-game`.
-=======
-
-Add the object to the `games` array, drop a photo into `public/images/`, and the
-new entry appears in search, browse, and its own game page automatically.
->>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
-
-## How search works
-
-`lib/search.js` is pure, dependency-free logic:
-
-- Text is normalised (Unicode NFC, zero-width characters stripped, lowercased,
-  whitespace collapsed) so Khmer words match regardless of typing quirks.
-- Every whitespace-separated token in the query must appear somewhere in the
-  entry's combined searchable text (name, description, materials, contributor,
-  place).
-- `pickRecommendations` rotates suggestion games deterministically per failed
-  query, so the same search always surfaces the same alternatives.
-
-## Supabase auth
-
-- `lib/supabase/server.js` — server client built with `@supabase/ssr`'s
-  `createServerClient`. The session rides in request cookies and is refreshed
-  server-side; cookie writes from Server Components are safely caught.
-- `lib/supabase/client.js` — browser client built with `createBrowserClient`
-  (sessions stored in cookies, readable on the next request).
-- The header's `AuthArea` is a small client component: it confirms the session
-  cookie with `getUser()` and stays in sync via `onAuthStateChange`, so pages stay
-  statically pre-rendered while auth state updates in the browser.
-- If email confirmation is enabled on your Supabase project, a new sign-up shows a
-  "check your email" message and the user confirms before signing in. With it
-  disabled, sign-up signs the user in and redirects home like a login.
-- **Password reset** — the login page links to `/forgot-password`, which emails a
-  reset link that lands on `/auth/update-password`. Add those paths to
-  **Supabase Auth → URL Configuration → Redirect URLs** for `http://localhost:3000`
-  and your deployed origin.
-
-## Styling
-
-- Shared palette, fonts, and layout tokens live in `app/globals.css` as CSS
-  variables (`--color-indigo`, `--color-marigold`, `--color-laterite`, …), drawn
-  from Cambodian material culture (indigo silk, saffron, laterite brick, rice-paper
-  cream).
-- Every page and component has its own plain CSS module. No inline-styling
-  framework, no CSS-in-JS.
-<<<<<<< HEAD
-- The signature motif is the `kramaStripe` — a checkered-scarf divider band.
-=======
-- The signature motif is the `kramaStripe` — a checkered-scarf divider band.
->>>>>>> 9d4225370ff1318cc4e2d8f6752dc399dc3c2240
