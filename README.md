@@ -241,8 +241,6 @@ Then:
 npm run dev
 ```
 
-Open `http://localhost:3000`. To recreate the database, run migrations 001–009 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
-
 `npm run build` is the check I used after every code change.
 
 
