@@ -141,51 +141,6 @@ Next.js (App Router, JavaScript only) runs on Vercel. Supabase holds accounts, e
 - `pending` — just submitted, or edited back into the queue. Not on the public site.
 - `published` — live on home, browse, search, and the game page.
 - `returned` — sent back with a reason. Owner sees it on My Entries and can edit and resubmit (which puts it back to `pending`).
-
-
-### SQL that was run in the Supabase SQL editor and is not in a numbered migration
-
-These have to exist or the reviewer flow does not work. They were created by hand, which is why they are written down here:
-
-```sql
--- status is not in migrations 001–009
-alter table entries add column if not exists status text not null default 'pending';
-
--- reviewers table already exists in the live project (user_id uuid → one account)
-
-create or replace function is_reviewer()
-returns boolean
-language sql
-security definer
-set search_path = public
-stable
-as $$
-  select exists (
-    select 1 from reviewers where user_id = auth.uid()
-  );
-$$;
-
-create or replace function review_entry(entry_id uuid, decision text)
-returns boolean
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if not is_reviewer() then
-    return false;
-  end if;
-  if decision not in ('published', 'returned') then
-    return false;
-  end if;
-  update entries
-  set status = decision
-  where id = entry_id and status = 'pending';
-  return found;
-end;
-$$;
-```
-
 ## 4. Security decisions
 
 **The gate, and why `review_entry` lives in the database.**
@@ -255,11 +210,15 @@ Every published entry names its contributor and the place, on the card and on th
 
 I am listing these names as they appear in the archive. Before I submit, I will confirm with each person that they are okay being named in a public AUPP project, and I will change any of these lines to "asked not to be named" if that was the answer. I will not invent a permission that was not asked for.
 
-`bay-khom.jpg` is also in `public/images/` but is not attached to a published entry yet.
-
-Photographs for the seed entries live in `public/images/` under the filenames above. I still need to write the photographer next to each filename: if I took the photo, I will say so; if the contributor or a family member sent it, I will put their name there; if it came from somewhere else, I will credit that source or replace the photo. I will not leave an uncredited image in a public archive.
-
-No lorem ipsum. No stock "user one / user two." If a later submission comes from someone who wants to stay unnamed, this is the sentence I will use: *a [relationship] in [place] who asked not to be named.*
+Links to the source of photos: 
+- Stech Chong: Facebook : https://share.google/BhNoSxFWSPoMU17GQ
+- Rubber Band Jumping Game: https://www.worldvision.org/sponsorship-news-stories/photos-cambodian-children
+- Muek Jumping Game: https://www.alamy.com/stock-photo/children-with-play-in-cambodia.html?pseudoid=53E08134-906E-4A4C-A7D3-2E4DAD9B5F47&sortBy=relevant
+- Teanh Prot: https://www.yosothor.org/publications/khmer-renaissance/chapter-three/picharana-lbaeng-teanh-proth.html
+- Leak Kanseng: https://troryorng.com/article/275683.html
+- Bos Angkunh: https://thmeythmey.com/detail/77045?page=1
+- Chol Chhoung: https://education.ams.com.kh/education-update/national/news/khmer-new-year-is-an-opportunity-for-young-people-to-play-popular-games-and-contribute-to-preserving-the-culture-and-traditions-of-khmer-ancestors
+- Chab Kon Klaeng: https://kohsantepheapdaily.com.kh/article/824603.html
 
 ## 7. Running it locally
 
@@ -288,26 +247,7 @@ Open `http://localhost:3000`. To recreate the database, run migrations 001–009
 
 `npm run build` is the check I used after every code change.
 
-## 8. Submission checklist
 
-- Live URL loads logged out and shows published entries only: yes, (URL)
-- A stranger cannot publish their own entry through the page or the console: yes, tested (date)
-- Logged out, the API returns nothing pending or returned: yes, tested (date)
-- Contributors can edit and delete only their own entries: yes
-- No secrets anywhere in the repo history: yes, checked with (how)
-- At least eight real entries, each with a credited source: yes, (count)
-- Khmer renders on every screen a user meets, including the queue: yes
-- Works at phone width: yes, tested on (device or browser width)
-- No test entries, lorem ipsum or TODO comments in shipped pages: yes
-- No console errors on the main pages: yes
-- jesseorndorff is a collaborator on this repo: yes
-- Supabase project restored and awake on (date)
-- Demo video link opens in a private window: yes, (link)
-- Reflection pasted in the Canvas submission: yes
-- Posted in the Show Your Archive discussion: yes
-- Q&A slot booked for (date and time)
-
----
 
 Repo: <https://github.com/rothanayorn/khmer-childhood-game-archive>
 

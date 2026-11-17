@@ -1,6 +1,3 @@
-// Sample entries. Replace contributor / place / text with real submissions,
-// or wire this up to a CMS or database later.
-
 const games = [
   {
     slug: "chol-chhoung",
