@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "./I18nProvider";
 import styles from "./AuthArea.module.css";
@@ -12,6 +13,7 @@ import styles from "./AuthArea.module.css";
 // cookie in the browser and keeps the header in sync after sign in/out.
 export default function AuthArea() {
   const { t } = useI18n();
+  const router = useRouter();
   const [user, setUser] = useState(null);
   // Whether the signed-in user is a reviewer — controls the header Review link.
   const [reviewer, setReviewer] = useState(false);
@@ -39,7 +41,10 @@ export default function AuthArea() {
 
     // Stay in sync after sign in / sign out / token refresh, mid-page too.
     const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => setUser(session?.user ?? null)
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        if (!session?.user) setReviewer(false);
+      }
     );
 
     return () => subscription.subscription.unsubscribe();
@@ -48,9 +53,11 @@ export default function AuthArea() {
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    // The SIGNED_OUT event also fires and clears the header; set it here too
-    // so the UI never waits on the event bus.
+    // Clear the header immediately, then leave any private page (My Entries,
+    // Review) so its rows cannot stay on screen after the session is gone.
     setUser(null);
+    setReviewer(false);
+    router.push("/login");
   }
 
   if (user) {

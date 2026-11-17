@@ -1,6 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import T from "@/components/T";
 import ReviewQueue from "@/components/ReviewQueue";
+import DeleteRequests from "@/components/DeleteRequests";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
 
@@ -36,7 +37,10 @@ export default async function ReviewPage() {
 
       <main className={`container ${styles.main}`}>
         {isReviewer ? (
-          <ReviewQueue />
+          <>
+            <ReviewQueue />
+            <DeleteRequests />
+          </>
         ) : (
           <T k="review.permission" as="p" className={styles.notice} />
         )}

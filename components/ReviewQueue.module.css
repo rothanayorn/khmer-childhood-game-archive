@@ -15,6 +15,12 @@
   color: var(--color-ink-soft);
 }
 
+.link {
+  color: var(--color-indigo);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .error {
   margin: 0 0 4px;
   color: var(--color-laterite);
@@ -157,7 +163,109 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+}
+
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--color-ink);
+  margin: 4px 0 12px;
+}
+
+.editLink {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-indigo);
+  border: 2px solid var(--color-indigo);
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.editLink:hover {
+  background: var(--color-indigo);
+  color: var(--color-bg-raised);
+}
+
+.deleteNow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--color-laterite);
+  color: var(--color-bg-raised);
+  border: 2px solid var(--color-laterite);
+  transition: opacity 150ms ease;
+}
+
+.deleteNow:hover {
+  opacity: 0.85;
+}
+
+.deleteNow:disabled,
+.publish:disabled,
+.return:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteSection {
+  margin-top: 32px;
+}
+
+.deleteList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.deleteRow {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.deleteInfo {
+  min-width: 0;
+}
+
+.deleteInfo .nameKhmer {
+  font-family: var(--font-khmer, var(--font-body));
+  font-weight: 600;
+  margin: 0;
+}
+
+.deleteInfo .nameEnglish {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  margin: 2px 0 6px;
+}
+
+@media (max-width: 480px) {
+  .deleteRow {
+    grid-template-columns: 56px 1fr;
+  }
+  .deleteRow .actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
 }
 
 .publish,

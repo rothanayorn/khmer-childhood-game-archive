@@ -141,6 +141,81 @@ Next.js (App Router, JavaScript only) runs on Vercel. Supabase holds accounts, e
 - `pending` — just submitted, or edited back into the queue. Not on the public site.
 - `published` — live on home, browse, search, and the game page.
 - `returned` — sent back with a reason. Owner sees it on My Entries and can edit and resubmit (which puts it back to `pending`).
+- `delete_requested` is not a status — it is a flag (`delete_requested = true`) on top of the current status. The entry stays where it is until a reviewer approves the delete or keeps it.
+
+### Request paths
+
+| Who | Path | What happens |
+|---|---|---|
+| Visitor | `/` · `/browse` · `/games/[slug]` | Next.js server → `entries` (published) or `/api/entries` → client search filter |
+| Visitor | `/api/entries` | Server Supabase client, `.eq("status", "published")`, newest first |
+| New user | `/signup` → email link → `/auth/confirm` → `/login` | `auth.users`, PKCE, username in `user_metadata` |
+| Contributor | `/submit` | Auth-gated → upload to `entry-images` → insert `entries` (`pending`) → "being reviewed" |
+| Contributor | `/my-entries` | Own rows only (`owner = auth.uid()`); Edit; **Request delete** (flag, not a delete) |
+| Reviewer | `/review` | `is_reviewer()` gate → pending queue (`review_entry`) + delete requests (approve = real DELETE, keep = flag off) + Edit / Delete now |
+| Stranger console | direct table / RPC | RLS + grants + `review_entry` internal reviewer check decide — not the UI |
+
+### Policies that actually shipped (migrations 001, 004, 005, 008, 009, 010)
+
+| Object | Action | Who |
+|---|---|---|
+| `entries` | SELECT | **Anyone** (`using (true)`, migration 001). The site hides non-published rows with `.eq("status", "published")` in `/api/entries`, `MyEntries`, and `ReviewQueue` — the database itself does not yet enforce it. |
+| `entries` | INSERT | Owner only (`auth.uid() = owner`) |
+| `entries` | UPDATE | Owner only, and the owner cannot be reassigned (005: `using` + `with check`). Reviewers may also update any entry (010). |
+| `entries` | DELETE | **Reviewer only** (`is_reviewer()`, migration 010). Owners request deletion; they cannot delete the row themselves (001 owner-delete policy is dropped in 010). |
+| `review_comments` | INSERT | Any authenticated user, `author_id = auth.uid()` (008). The app only sends these from the review queue. |
+| `review_comments` | SELECT | Comment author or entry owner |
+| `reviewers` | SELECT | Own row only (`user_id = auth.uid()`) |
+| `reviewers` | INSERT / UPDATE / DELETE | **Nobody** through the API. No policy + RLS = deny. Assignment is dashboard-only. |
+| `reviewers` | — | `FORCE ROW LEVEL SECURITY`; anon has an explicit deny-all policy |
+| `storage.objects` (`entry-images`) | SELECT | Public |
+| `storage.objects` (`entry-images`) | INSERT / UPDATE / DELETE | Owner of the object, authenticated |
+
+### SQL that was run in the Supabase SQL editor and is not in a numbered migration
+
+These have to exist or the reviewer flow does not work. They were created by hand, which is why they are written down here:
+
+```sql
+-- status is not in migrations 001–009
+alter table entries add column if not exists status text not null default 'pending';
+
+-- reviewers table already exists in the live project (user_id uuid → one account)
+
+create or replace function is_reviewer()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from reviewers where user_id = auth.uid()
+  );
+$$;
+
+create or replace function review_entry(entry_id uuid, decision text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not is_reviewer() then
+    return false;
+  end if;
+  if decision not in ('published', 'returned') then
+    return false;
+  end if;
+  update entries
+  set status = decision
+  where id = entry_id and status = 'pending';
+  return found;
+end;
+$$;
+```
+
+Migrations, in order: `001_entries_table.sql`, `002_entries_columns.sql`, `003_seed_entries.sql`, `004_storage_bucket.sql`, `005_edit_policy.sql`, `006_entries_khmer_columns.sql`, `007_contributor_place_km.sql`, `008_review_comments.sql`, `009_reviewer_policies.sql`, `010_reviewer_crud_delete.sql`.
+
 ## 4. Security decisions
 
 **The gate, and why `review_entry` lives in the database.**
@@ -151,8 +226,8 @@ The publishable Supabase key ships to every browser. Anything the client can cal
 **Decision: what a returned entry says.**
 A reviewer cannot return an entry without writing a reason. `ReviewQueue` blocks the empty comment in the UI, and the reason is inserted into `review_comments`. The owner reads it on My Entries. I would rather a contributor get a specific "the steps skip how the teams are chosen" than a silent `returned` badge.
 
-**Decision: reviewers cannot take down a published entry.**
-`review_entry` only touches rows that are still `pending`. There is no `'unpublished'` / `'taken down'` path in the RPC. If a published entry needs to come down, the owner can delete it (RLS allows that), or the project owner can do it in the dashboard. I did not want a reviewer account to be a silent takedown tool for someone else's live entry.
+**Decision: reviewers cannot take down a published entry through the review RPC.**
+`review_entry` only touches rows that are still `pending`. There is no `'unpublished'` / `'taken down'` path in the RPC. Migration 010 does give a reviewer DELETE on any row (full CRUD), and the review page offers **Delete now** on pending items and **Approve delete** on owner requests. The UI does not offer a one-click takedown of a published game from the public archive; if a published entry must come down, the owner can request deletion, or the project owner can do it in the dashboard. I did not want a reviewer account to be a silent takedown tool for someone else's live entry without going through a request or an explicit Delete now click.
 
 **Decision: search does not show a contributor their own pending entry.**
 `/api/entries` — and therefore home, browse, and search — returns `status = 'published'` only. A contributor sees their own pending and returned work on `/my-entries`, not mixed into the public archive. The public face of the archive stays published-only; drafts live in one place the owner controls.
@@ -243,9 +318,34 @@ Then:
 npm run dev
 ```
 
-Open `http://localhost:3000`. To recreate the database, run migrations 001–009 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
+Open `http://localhost:3000`. To recreate the database, run migrations 001–010 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
 
 `npm run build` is the check I used after every code change.
+
+## 8. Submission checklist
+
+Copied from the brief. Answers I can stand behind from the code are filled in; anything that needs a URL, a date, or a click I have not done yet is `[FILL IN]` rather than a yes I did not earn.
+
+- Live URL loads logged out and shows published entries only: yes — home, `/browse`, `/api/entries` all filter `status = 'published'` (`app/api/entries/route.js`). URL: `[FILL IN vercel.app address]`
+- A stranger cannot publish their own entry through the page or the console: yes, if `review_entry` in the live project matches the SQL in section 3 (re-checks `is_reviewer()`, `pending` only). Tested: `[FILL IN date you ran a console RPC as a stranger]`
+- Logged out, the API returns nothing pending or returned: yes for `/api/entries` (`.eq("status", "published")`). Tested: `[FILL IN date]`. Direct table reads with the publishable key are still open — see the known gap in section 4.
+- Contributors can edit and delete only their own entries: edit yes (`001`/`005`). Delete is now a **request** a reviewer must approve (`010` drops owner DELETE). Look at `supabase/migrations/001_entries_table.sql`, `005_edit_policy.sql`, `010_reviewer_crud_delete.sql`.
+- No secrets anywhere in the repo history: yes — `git log --all -S "eyJ"` and `git log --all -S "SERVICE_ROLE"` return nothing; `.env*` is in `.gitignore`; the publishable key is public by design and is not committed. Checked with `git log -S`.
+- At least eight real entries, each with a credited source: yes — eight, listed with contributor, place, and photo in section 6. Count: 8.
+- Khmer renders on every screen a user meets, including the queue: yes — names always in Khmer; full KM dictionary in `lib/i18n.js` including `review.*` and `myEntries.status*`; language switcher in the header.
+- Works at phone width: yes — hamburger under 680 px (`components/SiteHeader.module.css`), card/queue restack at 480 px. Tested on: `[FILL IN device or "Chrome DevTools 390×844"]`
+- No test entries, lorem ipsum or TODO comments in shipped pages: yes — searched the repo; `TODO` count is 0; `lorem` appears only in `AGENTS.md` as a rule, not in a page.
+- No console errors on the main pages: `[FILL IN yes after a devtools click-through of /, /browse, /games/[slug], /login, /my-entries, /review]`. Last `npm run build` was clean (exit 0).
+- jesseorndorff is a collaborator on this repo: `[FILL IN yes/no — GitHub → Settings → Collaborators]`
+- Supabase project restored and awake on `[FILL IN date]`
+- Demo video link opens in a private window: `[FILL IN link]`
+- Reflection pasted in the Canvas submission: `[FILL IN yes/no]`
+- Posted in the Show Your Archive discussion: `[FILL IN yes/no]`
+- Q&A slot booked for `[FILL IN date and time]`
+
+---
+
+Repo: <https://github.com/rothanayorn/khmer-childhood-game-archive>
 
 
 

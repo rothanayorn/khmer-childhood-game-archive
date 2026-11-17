@@ -69,11 +69,21 @@ export default function EditEntryForm({ slug }) {
           return;
         }
         const row = rows[0];
-        // Only the owner can edit — RLS enforces this too; the check here is
-        // so the page can say so plainly instead of showing a broken form.
+        // Only the owner can edit — unless the signed-in user is a reviewer
+        // (full CRUD on user entries). RLS is the real gate; this check is
+        // so the page can say "not yours" instead of showing a broken form.
         if (row.owner !== authData.user.id) {
-          setStatus("notOwner");
-          return;
+          let reviewer = false;
+          try {
+            const { data } = await supabase.rpc("is_reviewer");
+            reviewer = data === true;
+          } catch {
+            reviewer = false;
+          }
+          if (!reviewer) {
+            setStatus("notOwner");
+            return;
+          }
         }
         const game = toGame(row);
         setEntryId(row.id);
@@ -197,6 +207,10 @@ export default function EditEntryForm({ slug }) {
       }
       if (!isReviewer) {
         row.status = "pending";
+      } else {
+        // A reviewer edit is an active decision: drop any delete request.
+        row.delete_requested = false;
+        row.status_before_delete = null;
       }
 
       const { error: updateError } = await supabase

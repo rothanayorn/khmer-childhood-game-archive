@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { ENTRY_COLUMNS_KM, toGame } from "@/lib/entries";
+import { ENTRY_COLUMNS_KM, storagePathFromUrl, toGame } from "@/lib/entries";
 import { localizeEntry } from "@/lib/entryContent";
 import { useI18n } from "./I18nProvider";
 import styles from "./ReviewQueue.module.css";
@@ -39,7 +40,7 @@ function formatTime(value) {
 export default function ReviewQueue() {
   const { t, lang } = useI18n();
   const [items, setItems] = useState([]);
-  const [status, setStatus] = useState("loading"); // loading | ready | error
+  const [status, setStatus] = useState("loading"); // loading | ready | signedOut | error
   const [busyId, setBusyId] = useState("");
   const [error, setError] = useState("");
   const [detail, setDetail] = useState("");
@@ -63,6 +64,18 @@ export default function ReviewQueue() {
 
   useEffect(() => {
     load();
+    const supabase = createClient();
+    // Logging out must empty the queue at once, even if the redirect to
+    // /login has not finished yet.
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (event) => {
+        if (event === "SIGNED_OUT") {
+          setItems([]);
+          setStatus("signedOut");
+        }
+      }
+    );
+    return () => subscription.subscription.unsubscribe();
   }, []);
 
   function commentFor(id) {
@@ -138,6 +151,51 @@ export default function ReviewQueue() {
     setItems((prev) => prev.filter((row) => row.id !== entry.id));
   }
 
+  // Reviewer CRUD: delete any entry immediately (RLS allows this only for
+  // reviewers). Used from the pending queue; delete *requests* are handled
+  // in DeleteRequests.
+  async function deleteNow(entry) {
+    const confirmed = window.confirm(
+      t("review.confirmDeleteNow", { title: entry.nameEnglish || entry.slug })
+    );
+    if (!confirmed) return;
+    setBusyId(entry.id);
+    setError("");
+    setDetail("");
+    const supabase = createClient();
+    try {
+      const { error: deleteError } = await supabase
+        .from("entries")
+        .delete()
+        .eq("id", entry.id);
+      if (deleteError) {
+        setError(t("review.approveFail"));
+        setDetail(deleteError.message || "");
+        return;
+      }
+      const path = storagePathFromUrl(entry.image || "");
+      if (path) {
+        await supabase.storage.from("entry-images").remove([path]);
+      }
+      setItems((prev) => prev.filter((row) => row.id !== entry.id));
+    } catch {
+      setError(t("review.approveFail"));
+    } finally {
+      setBusyId("");
+    }
+  }
+
+  if (status === "signedOut") {
+    return (
+      <p className={styles.notice}>
+        <Link href="/login" className={styles.link}>
+          {t("nav.logIn")}
+        </Link>{" "}
+        {t("review.permission")}
+      </p>
+    );
+  }
+
   if (status === "loading") {
     return <p className={styles.notice}>{t("review.loading")}</p>;
   }
@@ -152,6 +210,7 @@ export default function ReviewQueue() {
 
   return (
     <div className={styles.list}>
+      <h2 className={styles.sectionTitle}>{t("review.pendingHeading")}</h2>
       {error && (
         <p className={styles.error} role="alert">
           {error}
@@ -253,6 +312,22 @@ export default function ReviewQueue() {
                 onClick={() => decide(row, "returned")}
               >
                 {t("review.returnEntry")}
+              </button>
+              <Link
+                href={`/edit/${row.slug}`}
+                className={styles.editLink}
+              >
+                {t("review.edit")}
+              </Link>
+              <button
+                type="button"
+                className={styles.deleteNow}
+                disabled={busyId === row.id}
+                onClick={() => deleteNow(entry)}
+              >
+                {busyId === row.id
+                  ? t("review.deleting")
+                  : t("review.deleteNow")}
               </button>
             </div>
           </article>

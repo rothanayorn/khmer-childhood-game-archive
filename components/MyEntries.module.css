@@ -83,6 +83,10 @@
   color: var(--color-laterite);
 }
 
+.requested {
+  color: #8a6d1d;
+}
+
 .reason {
   margin: 6px 0 0;
   font-size: 0.82rem;

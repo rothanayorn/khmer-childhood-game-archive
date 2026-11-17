@@ -21,6 +21,10 @@ export default function SubmitEntryButton() {
       .getUser()
       .then(({ data }) => setSignedIn(Boolean(data.user)))
       .catch(() => setSignedIn(false));
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => setSignedIn(Boolean(session?.user))
+    );
+    return () => subscription.subscription.unsubscribe();
   }, []);
 
   return (
