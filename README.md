@@ -143,34 +143,6 @@ Next.js (App Router, JavaScript only) runs on Vercel. Supabase holds accounts, e
 - `returned` — sent back with a reason. Owner sees it on My Entries and can edit and resubmit (which puts it back to `pending`).
 - `delete_requested` is not a status — it is a flag (`delete_requested = true`) on top of the current status. The entry stays where it is until a reviewer approves the delete or keeps it.
 
-### Request paths
-
-| Who | Path | What happens |
-|---|---|---|
-| Visitor | `/` · `/browse` · `/games/[slug]` | Next.js server → `entries` (published) or `/api/entries` → client search filter |
-| Visitor | `/api/entries` | Server Supabase client, `.eq("status", "published")`, newest first |
-| New user | `/signup` → email link → `/auth/confirm` → `/login` | `auth.users`, PKCE, username in `user_metadata` |
-| Contributor | `/submit` | Auth-gated → upload to `entry-images` → insert `entries` (`pending`) → "being reviewed" |
-| Contributor | `/my-entries` | Own rows only (`owner = auth.uid()`); Edit; **Request delete** (flag, not a delete) |
-| Reviewer | `/review` | `is_reviewer()` gate → pending queue (`review_entry`) + delete requests (approve = real DELETE, keep = flag off) + Edit / Delete now |
-| Stranger console | direct table / RPC | RLS + grants + `review_entry` internal reviewer check decide — not the UI |
-
-### Policies that actually shipped (migrations 001, 004, 005, 008, 009, 010)
-
-| Object | Action | Who |
-|---|---|---|
-| `entries` | SELECT | **Anyone** (`using (true)`, migration 001). The site hides non-published rows with `.eq("status", "published")` in `/api/entries`, `MyEntries`, and `ReviewQueue` — the database itself does not yet enforce it. |
-| `entries` | INSERT | Owner only (`auth.uid() = owner`) |
-| `entries` | UPDATE | Owner only, and the owner cannot be reassigned (005: `using` + `with check`). Reviewers may also update any entry (010). |
-| `entries` | DELETE | **Reviewer only** (`is_reviewer()`, migration 010). Owners request deletion; they cannot delete the row themselves (001 owner-delete policy is dropped in 010). |
-| `review_comments` | INSERT | Any authenticated user, `author_id = auth.uid()` (008). The app only sends these from the review queue. |
-| `review_comments` | SELECT | Comment author or entry owner |
-| `reviewers` | SELECT | Own row only (`user_id = auth.uid()`) |
-| `reviewers` | INSERT / UPDATE / DELETE | **Nobody** through the API. No policy + RLS = deny. Assignment is dashboard-only. |
-| `reviewers` | — | `FORCE ROW LEVEL SECURITY`; anon has an explicit deny-all policy |
-| `storage.objects` (`entry-images`) | SELECT | Public |
-| `storage.objects` (`entry-images`) | INSERT / UPDATE / DELETE | Owner of the object, authenticated |
-
 ## 4. Security decisions
 
 **The gate, and why `review_entry` lives in the database.**
