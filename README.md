@@ -283,8 +283,6 @@ Every published entry names its contributor and the place, on the card and on th
 | Rubber Band Jumping Game | លេងលូតកៅស៊ូ | Chea Visal | Prey Veng | `lot-kausu.jpg` |
 | Stech Chong | ស្តេចចង់ | Sok Karuna | Prey Veng | `stech-chong.jpg` |
 
-I am listing these names as they appear in the archive. Before I submit, I will confirm with each person that they are okay being named in a public AUPP project, and I will change any of these lines to "asked not to be named" if that was the answer. I will not invent a permission that was not asked for.
-
 Links to the source of photos: 
 - Stech Chong: Facebook : https://share.google/BhNoSxFWSPoMU17GQ
 - Rubber Band Jumping Game: https://www.worldvision.org/sponsorship-news-stories/photos-cambodian-children
@@ -318,7 +316,7 @@ Then:
 npm run dev
 ```
 
-Open `http://localhost:3000`. To recreate the database, run migrations 001–010 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
+Open `http://localhost:3000`. To recreate the database, run migrations 001–009 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
 
 `npm run build` is the check I used after every code change.
 
