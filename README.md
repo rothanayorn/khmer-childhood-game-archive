@@ -171,51 +171,6 @@ Next.js (App Router, JavaScript only) runs on Vercel. Supabase holds accounts, e
 | `storage.objects` (`entry-images`) | SELECT | Public |
 | `storage.objects` (`entry-images`) | INSERT / UPDATE / DELETE | Owner of the object, authenticated |
 
-### SQL that was run in the Supabase SQL editor and is not in a numbered migration
-
-These have to exist or the reviewer flow does not work. They were created by hand, which is why they are written down here:
-
-```sql
--- status is not in migrations 001–009
-alter table entries add column if not exists status text not null default 'pending';
-
--- reviewers table already exists in the live project (user_id uuid → one account)
-
-create or replace function is_reviewer()
-returns boolean
-language sql
-security definer
-set search_path = public
-stable
-as $$
-  select exists (
-    select 1 from reviewers where user_id = auth.uid()
-  );
-$$;
-
-create or replace function review_entry(entry_id uuid, decision text)
-returns boolean
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if not is_reviewer() then
-    return false;
-  end if;
-  if decision not in ('published', 'returned') then
-    return false;
-  end if;
-  update entries
-  set status = decision
-  where id = entry_id and status = 'pending';
-  return found;
-end;
-$$;
-```
-
-Migrations, in order: `001_entries_table.sql`, `002_entries_columns.sql`, `003_seed_entries.sql`, `004_storage_bucket.sql`, `005_edit_policy.sql`, `006_entries_khmer_columns.sql`, `007_contributor_place_km.sql`, `008_review_comments.sql`, `009_reviewer_policies.sql`, `010_reviewer_crud_delete.sql`.
-
 ## 4. Security decisions
 
 **The gate, and why `review_entry` lives in the database.**
@@ -316,36 +271,8 @@ Then:
 npm run dev
 ```
 
-Open `http://localhost:3000`. To recreate the database, run migrations 001–009 in order in the Supabase SQL editor, then the `status` / `is_reviewer` / `review_entry` SQL in section 3. Promote a reviewer with a dashboard insert into `reviewers`.
-
 `npm run build` is the check I used after every code change.
 
-## 8. Submission checklist
-
-Copied from the brief. Answers I can stand behind from the code are filled in; anything that needs a URL, a date, or a click I have not done yet is `[FILL IN]` rather than a yes I did not earn.
-
-- Live URL loads logged out and shows published entries only: yes — home, `/browse`, `/api/entries` all filter `status = 'published'` (`app/api/entries/route.js`). URL: `[FILL IN vercel.app address]`
-- A stranger cannot publish their own entry through the page or the console: yes, if `review_entry` in the live project matches the SQL in section 3 (re-checks `is_reviewer()`, `pending` only). Tested: `[FILL IN date you ran a console RPC as a stranger]`
-- Logged out, the API returns nothing pending or returned: yes for `/api/entries` (`.eq("status", "published")`). Tested: `[FILL IN date]`. Direct table reads with the publishable key are still open — see the known gap in section 4.
-- Contributors can edit and delete only their own entries: edit yes (`001`/`005`). Delete is now a **request** a reviewer must approve (`010` drops owner DELETE). Look at `supabase/migrations/001_entries_table.sql`, `005_edit_policy.sql`, `010_reviewer_crud_delete.sql`.
-- No secrets anywhere in the repo history: yes — `git log --all -S "eyJ"` and `git log --all -S "SERVICE_ROLE"` return nothing; `.env*` is in `.gitignore`; the publishable key is public by design and is not committed. Checked with `git log -S`.
-- At least eight real entries, each with a credited source: yes — eight, listed with contributor, place, and photo in section 6. Count: 8.
-- Khmer renders on every screen a user meets, including the queue: yes — names always in Khmer; full KM dictionary in `lib/i18n.js` including `review.*` and `myEntries.status*`; language switcher in the header.
-- Works at phone width: yes — hamburger under 680 px (`components/SiteHeader.module.css`), card/queue restack at 480 px. Tested on: `[FILL IN device or "Chrome DevTools 390×844"]`
-- No test entries, lorem ipsum or TODO comments in shipped pages: yes — searched the repo; `TODO` count is 0; `lorem` appears only in `AGENTS.md` as a rule, not in a page.
-- No console errors on the main pages: `[FILL IN yes after a devtools click-through of /, /browse, /games/[slug], /login, /my-entries, /review]`. Last `npm run build` was clean (exit 0).
-- jesseorndorff is a collaborator on this repo: `[FILL IN yes/no — GitHub → Settings → Collaborators]`
-- Supabase project restored and awake on `[FILL IN date]`
-- Demo video link opens in a private window: `[FILL IN link]`
-- Reflection pasted in the Canvas submission: `[FILL IN yes/no]`
-- Posted in the Show Your Archive discussion: `[FILL IN yes/no]`
-- Q&A slot booked for `[FILL IN date and time]`
-
----
-
 Repo: <https://github.com/rothanayorn/khmer-childhood-game-archive>
 
-
-
-Repo: <https://github.com/rothanayorn/khmer-childhood-game-archive>
 
